@@ -1,0 +1,2864 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Borrowed authority, an IT security presentation by Daniel Zsolnai" />
+    <title>Borrowed authority | Daniel Zsolnai</title>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section class="cover-slide" data-background-color="#07101f">
+          <main class="cover">
+            <div class="cover-copy">
+              <p class="eyebrow">Web security</p>
+              <h1>Borrowed<span>authority</span></h1>
+              <p class="subtitle">How assumptions produce vulnerabilities</p>
+              <div class="speaker">
+                <span class="speaker-mark">DZ</span>
+                <span>Daniel Zsolnai</span>
+              </div>
+            </div>
+
+            <div class="cover-company fragment custom" data-fragment-index="0" aria-label="Banana Technologies">
+              <span class="cover-company-mark"><img src="/assets/banana-silhouette.svg" alt="" /></span>
+              <span class="cover-company-kicker">Our fictional company</span>
+              <strong>Banana Technologies</strong>
+              <p>Customer support, ticketing, and identity services.</p>
+            </div>
+          </main>
+
+          <aside class="notes">
+            Introduce borrowed authority, then click to establish Banana Technologies before entering its support
+            application. This is an illustrative attack simulation. The systems are fictional, but every trust
+            decision is taken from ordinary web and cloud architecture.
+          </aside>
+        </section>
+
+        <section class="scene-slide ticket-list-slide" data-background-color="#07101f" data-transition="fade-in none-out">
+          <div class="scene-label">Monday · 10:13</div>
+
+          <div class="browser-window" data-id="support-browser">
+            <div class="browser-chrome">
+              <div class="window-controls" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="address-bar"><img class="lock" src="/assets/lock.svg" alt="" />support.banana.com/tickets</div>
+            </div>
+
+            <div class="support-app">
+              <header class="app-header">
+                <div class="brand" aria-label="Banana support home">
+                  <span class="banana-mark"><img src="/assets/banana-silhouette.svg" alt="" /></span>
+                  <span>Banana <small>Support</small></span>
+                </div>
+                <div class="staff-user">
+                  <span class="staff-copy"><strong>Maya Chen</strong><small>Support agent</small></span>
+                  <span class="avatar">MC</span>
+                </div>
+              </header>
+
+              <div class="app-body">
+                <aside class="app-sidebar">
+                  <p class="sidebar-heading">Workspace</p>
+                  <div class="nav-item active"><span>Inbox</span><b>12</b></div>
+                  <div class="nav-item"><span>Assigned to me</span><b>4</b></div>
+                  <div class="nav-item"><span>Waiting</span><b>7</b></div>
+                  <div class="nav-item"><span>Closed</span></div>
+                </aside>
+
+                <main class="ticket-workspace">
+                  <div class="workspace-heading">
+                    <div><p class="overline">Support queue</p><h2>Open tickets</h2></div>
+                    <div class="filter-button">
+                      <span>All teams</span>
+                      <svg class="filter-chevron" viewBox="0 0 12 8" aria-hidden="true">
+                        <path d="m1 1 5 5 5-5" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div class="ticket-list">
+                    <div class="ticket-row urgent-row" data-id="urgent-ticket">
+                      <span class="priority urgent">Urgent</span>
+                      <span class="ticket-summary"><strong>Payroll export is blocked</strong><small>#10482 · Adrian Vale</small></span>
+                      <span class="ticket-time">now</span>
+                      <span class="open-ticket">Open →</span>
+                    </div>
+                    <div class="ticket-row muted-row">
+                      <span class="priority normal">Normal</span>
+                      <span class="ticket-summary"><strong>Invoice PDF has the wrong address</strong><small>#10481 · Elena M.</small></span>
+                      <span class="ticket-time">12 min</span>
+                    </div>
+                    <div class="ticket-row muted-row">
+                      <span class="priority normal">Normal</span>
+                      <span class="ticket-summary"><strong>Cannot update billing contact</strong><small>#10479 · Priya S.</small></span>
+                      <span class="ticket-time">31 min</span>
+                    </div>
+                  </div>
+                </main>
+              </div>
+            </div>
+            <img class="demo-cursor cursor-open-ticket" data-id="support-cursor" src="/assets/mouse-pointer-2.svg" alt="" />
+            <span class="interaction-trigger ticket-open-trigger fragment custom" data-fragment-index="0" aria-hidden="true"></span>
+          </div>
+
+          <aside class="notes">Maya is a support agent, not an administrator. She opens the newest urgent ticket.</aside>
+        </section>
+
+        <section class="scene-slide ticket-detail-slide" data-background-color="#07101f" data-transition="none-in fade-out">
+          <div class="scene-label">Ticket #10482</div>
+
+          <div class="browser-window" data-id="support-browser">
+            <div class="browser-chrome">
+              <div class="window-controls" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="address-bar"><img class="lock" src="/assets/lock.svg" alt="" />support.banana.com/tickets/10482</div>
+            </div>
+
+            <div class="support-app">
+              <header class="app-header">
+                <div class="brand" aria-label="Banana support home">
+                  <span class="banana-mark"><img src="/assets/banana-silhouette.svg" alt="" /></span>
+                  <span>Banana <small>Support</small></span>
+                </div>
+                <div class="staff-user">
+                  <span class="staff-copy"><strong>Maya Chen</strong><small>Support agent</small></span>
+                  <span class="avatar">MC</span>
+                </div>
+              </header>
+
+              <div class="ticket-detail">
+                <div class="ticket-toolbar">
+                  <span class="back-link">← Open tickets</span>
+                  <span class="priority urgent">Urgent</span>
+                </div>
+
+                <article class="ticket-card" data-id="urgent-ticket">
+                  <header class="ticket-card-header">
+                    <div><p class="overline">Adrian Vale · just now</p><h2>Payroll export is blocked</h2></div>
+                    <span class="ticket-number">#10482</span>
+                  </header>
+
+                  <div class="ticket-message">
+                    <p>Hi,</p>
+                    <p>Our payroll export has been stuck on "Preparing" since this morning. We need to submit it before 16:00 today.</p>
+                    <p>Could someone check whether the export job is still running?</p>
+                    <p>Thanks,<br />Adrian</p>
+                  </div>
+
+                  <footer class="ticket-actions">
+                    <div class="secondary-action">Assign to me</div>
+                    <div class="close-action">
+                      <span class="close-label">Close ticket</span>
+                      <span class="closed-label">Ticket closed</span>
+                    </div>
+                  </footer>
+                </article>
+              </div>
+            </div>
+            <img class="demo-cursor cursor-close-ticket" data-id="support-cursor" src="/assets/mouse-pointer-2.svg" alt="" />
+            <span class="interaction-trigger ticket-close-trigger fragment custom" data-fragment-index="0" aria-hidden="true"></span>
+          </div>
+
+          <aside class="notes">
+            The ticket looks ordinary. Maya does not click a suspicious link or download a file.
+            Opening the ticket was enough. Advance once to close it, then advance again to continue to the breach.
+          </aside>
+        </section>
+
+        <section class="news-slide" data-background-color="#07101f">
+          <div class="scene-label">Three days later</div>
+
+          <div class="browser-window news-browser">
+            <div class="browser-chrome">
+              <div class="window-controls" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="address-bar"><img class="lock" src="/assets/lock.svg" alt="" />runtimewire.com/story/banana-breach</div>
+            </div>
+
+            <div class="social-layout">
+            <article class="social-post">
+              <header class="post-author">
+                <span class="publication-mark">RW</span>
+                <span><strong>Runtime Wire</strong><small>@runtimewire · 18m</small></span>
+              </header>
+
+              <p class="post-copy">Banana confirms a major security breach after an attacker gained administrative access through its support platform.</p>
+
+              <div class="article-card">
+                <div class="article-art"><span class="breach-label">Breaking</span><img class="article-banana" src="/assets/banana-silhouette.svg" alt="" /></div>
+                <div class="article-copy">
+                  <small>runtimewire.com</small>
+                  <h2>Banana breach exposes customer and employee records</h2>
+                  <p>The company says an unauthorized administrator accessed internal systems before the account was disabled.</p>
+                </div>
+              </div>
+
+              <footer class="post-stats"><span>1.8K replies</span><span>12K reposts</span><span>41K likes</span><span>6.2M views</span></footer>
+            </article>
+
+            <div class="reply-thread" aria-label="Replies to the breach article">
+              <p class="thread-heading">Replies</p>
+
+              <article class="reply">
+                <span class="reply-avatar yellow">JL</span>
+                <div><strong>Jamie L. <small>@jamie_l_84</small></strong><p>Security team slipped up.</p><span>6.7K likes</span></div>
+              </article>
+              <article class="reply">
+                <span class="reply-avatar coral">NW</span>
+                <div><strong>Nora Weiss <small>@measure_twice</small></strong><p>I bet it was vibe coded.</p><span>4.2K likes</span></div>
+              </article>
+              <article class="reply">
+                <span class="reply-avatar blue">VS</span>
+                <div><strong>VulnSentry <small>@vulnsentry</small></strong><p>Wouldn't have happened if they used VulnSentry Enterprise. Book a demo today.</p><span>Promoted</span></div>
+              </article>
+              <article class="reply">
+                <span class="reply-avatar violet">DO</span>
+                <div><strong>Dave <small>@dave_online</small></strong><p>Fire IT. How does opening one ticket turn into admin access?</p><span>2.8K likes</span></div>
+              </article>
+              <article class="reply">
+                <span class="reply-avatar mint">AT</span>
+                <div><strong>Ava Torres <small>@actually_ava</small></strong><p>Changing my Banana password right now.</p><span>1.4K likes</span></div>
+              </article>
+              <div class="show-more-replies">Show more replies</div>
+            </div>
+            </div>
+          </div>
+
+          <aside class="notes">
+            Jump forward three days. The public sees one outcome and invents a simple explanation.
+            We are going to rewind and reconstruct what actually happened.
+          </aside>
+        </section>
+
+        <section class="chain-map-slide" data-background-color="#07101f">
+          <header class="lesson-heading">
+            <p class="eyebrow">Reconstructing the breach</p>
+            <h2>How did this happen?</h2>
+          </header>
+
+          <div class="attack-map" aria-label="Normal support flows gradually becoming the attack path">
+            <svg class="map-lines" viewBox="0 0 1460 650" aria-hidden="true">
+              <defs>
+                <marker id="map-arrow-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                  <path d="M0 0 10 5 0 10Z" fill="#667890" />
+                </marker>
+                <marker id="map-arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                  <path d="M0 0 10 5 0 10Z" fill="#ffac66" />
+                </marker>
+                <marker id="map-arrow-pink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                  <path d="M0 0 10 5 0 10Z" fill="#ff647c" />
+                </marker>
+                <marker id="map-arrow-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                  <path d="M0 0 10 5 0 10Z" fill="#57d7ff" />
+                </marker>
+                <marker id="map-arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                  <path d="M0 0 10 5 0 10Z" fill="#b491ff" />
+                </marker>
+                <marker id="map-arrow-red-auth" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="20" markerHeight="20" orient="auto-start-reverse">
+                  <path class="map-red-marker-head map-auth-marker-head" d="M0 0 10 5 0 10Z" fill="#ff647c" />
+                </marker>
+                <marker id="map-arrow-red-xss" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="20" markerHeight="20" orient="auto-start-reverse">
+                  <path class="map-red-marker-head map-xss-marker-head" d="M0 0 10 5 0 10Z" fill="#ff647c" />
+                </marker>
+                <marker id="map-arrow-red-ssrf" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="20" markerHeight="20" orient="auto-start-reverse">
+                  <path class="map-red-marker-head map-ssrf-marker-head" d="M0 0 10 5 0 10Z" fill="#ff647c" />
+                </marker>
+              </defs>
+
+              <g class="map-edge map-auth-capability fragment custom" data-fragment-index="1">
+                <path pathLength="1" d="M1190 56H1280" />
+              </g>
+              <g class="map-auth-capability-head fragment custom" data-fragment-index="1">
+                <path d="M1300 56 1280 46 1280 66Z" />
+              </g>
+              <g class="map-edge map-auth-attack fragment custom" data-fragment-index="16">
+                <path pathLength="1" d="M1190 56H1280" />
+              </g>
+              <g class="map-auth-attack-head fragment custom" data-fragment-index="16">
+                <path d="M1300 56 1280 46 1280 66Z" />
+              </g>
+              <g class="map-edge map-user-call fragment custom" data-fragment-index="5">
+                <path pathLength="1" d="M190 315H480" />
+              </g>
+              <g class="map-user-call-head fragment custom" data-fragment-index="5">
+                <path d="M500 315 480 305 480 325Z" />
+              </g>
+              <g class="map-edge map-normal-write fragment custom" data-fragment-index="5">
+                <path pathLength="1" d="M840 315H974" />
+              </g>
+              <g class="map-normal-write-head fragment custom" data-fragment-index="5">
+                <path fill="#667890" d="M994 315 974 305 974 325Z" />
+              </g>
+              <g class="map-edge map-malicious-call fragment custom" data-fragment-index="7">
+                <path pathLength="1" d="M190 315H480" />
+              </g>
+              <g class="map-malicious-call-head fragment custom" data-fragment-index="7">
+                <path d="M500 315 480 305 480 325Z" />
+              </g>
+              <g class="map-edge map-injected-write fragment custom" data-fragment-index="8">
+                <path pathLength="1" d="M840 315H974" />
+              </g>
+              <g class="map-injected-write-head fragment custom" data-fragment-index="8">
+                <path d="M994 315 974 305 974 325Z" />
+              </g>
+              <g class="map-edge map-xss-edge fragment custom" data-fragment-index="13">
+                <path pathLength="1" d="M1072 370C920 478 430 516 210 474" />
+              </g>
+              <g class="map-xss-edge-head fragment custom" data-fragment-index="13">
+                <path d="M190 470 212 464 208 484Z" />
+              </g>
+              <g class="map-edge map-maya-call fragment custom" data-fragment-index="10">
+                <path pathLength="1" d="M190 470C307 470 385 394 481 366" />
+              </g>
+              <g class="map-maya-call-head fragment custom" data-fragment-index="10">
+                <path d="M500 360 484 375 478 356Z" />
+              </g>
+              <g class="map-edge map-xss-request fragment custom" data-fragment-index="14">
+                <path pathLength="1" d="M190 470C307 470 385 394 481 366" />
+              </g>
+              <g class="map-xss-request-head fragment custom" data-fragment-index="14">
+                <path d="M500 360 484 375 478 356Z" />
+              </g>
+              <g class="map-external-route">
+                <g class="map-edge map-external-call fragment custom" data-fragment-index="11">
+                  <path pathLength="1" d="M670 255V150" />
+                </g>
+                <g class="map-external-call-head fragment custom" data-fragment-index="11">
+                  <path d="M670 130 660 150 680 150Z" />
+                </g>
+              </g>
+              <g class="map-edge map-ssrf-edge fragment custom" data-fragment-index="15">
+                <path pathLength="1" d="M670 255C770 252 830 116 912 78" />
+              </g>
+              <g class="map-ssrf-edge-head fragment custom" data-fragment-index="15">
+                <path d="M930 70 916 88 908 69Z" />
+              </g>
+            </svg>
+
+            <article class="map-service map-auth-service fragment custom" data-fragment-index="0">
+              <svg class="map-server-icon" viewBox="0 0 32 32" aria-hidden="true">
+                <rect x="4" y="4" width="24" height="8" rx="2" />
+                <rect x="4" y="20" width="24" height="8" rx="2" />
+                <circle cx="9" cy="8" r="1.3" />
+                <circle cx="9" cy="24" r="1.3" />
+              </svg>
+              <span><strong>Auth service</strong><code>auth.banana.com</code></span>
+            </article>
+
+            <div class="map-port map-auth-port fragment custom" data-fragment-index="1" data-id="port-auth-users" aria-label="Auth users endpoint">
+              <i></i>
+            </div>
+
+            <div class="map-edge-label map-auth-endpoint fragment custom" data-fragment-index="1">
+              <code data-label="PATCH /users/{userId}">PATCH /users/{userId}</code>
+            </div>
+
+            <div class="map-admin-node fragment custom" data-fragment-index="2">
+              <small>Can grant</small>
+              <strong>Admin</strong>
+            </div>
+            <div class="map-admin-flash fragment custom" data-fragment-index="16" aria-hidden="true"></div>
+
+            <article class="map-service map-support-service fragment custom" data-fragment-index="3">
+              <svg class="map-server-icon" viewBox="0 0 32 32" aria-hidden="true">
+                <rect x="4" y="4" width="24" height="8" rx="2" />
+                <rect x="4" y="20" width="24" height="8" rx="2" />
+                <circle cx="9" cy="8" r="1.3" />
+                <circle cx="9" cy="24" r="1.3" />
+              </svg>
+              <span><strong>Support service</strong><code>support.banana.com</code></span>
+            </article>
+
+            <div class="map-port map-ticket-port fragment custom" data-fragment-index="5" data-id="port-ticket-metadata" aria-label="Ticket metadata endpoint">
+              <i></i>
+            </div>
+            <div class="map-port map-subsystem-port fragment custom" data-fragment-index="10" data-id="port-subsystem-metadata" aria-label="Subsystem metadata endpoint">
+              <i></i>
+            </div>
+
+            <article class="map-person map-user fragment custom" data-fragment-index="4">
+              <svg class="map-person-icon map-user-icon" viewBox="0 -960 960 960" aria-hidden="true">
+                <path d="M480-481q-66 0-108-42t-42-108q0-66 42-108t108-42q66 0 108 42t42 108q0 66-42 108t-108 42ZM160-160v-94q0-38 19-65t49-41q67-30 128.5-45T480-420q62 0 123 15.5t127.92 44.69q31.3 14.13 50.19 40.97Q800-292 800-254v94H160Zm60-60h520v-34q0-16-9.5-30.5T707-306q-64-31-117-42.5T480-360q-57 0-111 11.5T252-306q-14 7-23 21.5t-9 30.5v34Zm260-321q39 0 64.5-25.5T570-631q0-39-25.5-64.5T480-721q-39 0-64.5 25.5T390-631q0 39 25.5 64.5T480-541Z" />
+                <path d="M220-220v-34q0-16 9-30.5t23-21.5q63-31 117-42.5T480-360q57 0 110 11.5T707-306q14 7 23.5 21.5T740-254v34H220Z" />
+                <ellipse cx="480" cy="-631" rx="92" ry="100" />
+              </svg>
+              <svg class="map-devil-horns" viewBox="0 0 62 62" aria-hidden="true">
+                <path d="M29 17.5c-2.9-.8-5.2-2.7-6.3-5.7-.6-1.7-.7-3.2-.5-4.4 2.5 3 5.2 4.4 8.1 5.1.3 1.8-.1 3.5-1.3 5Z" />
+                <path d="M33 17.5c2.9-.8 5.2-2.7 6.3-5.7.6-1.7.7-3.2.5-4.4-2.5 3-5.2 4.4-8.1 5.1-.3 1.8.1 3.5 1.3 5Z" />
+              </svg>
+              <strong class="map-user-name">User</strong>
+            </article>
+            <span class="fragment map-user-malicious" data-fragment-index="6" aria-hidden="true"></span>
+
+            <div class="map-edge-label map-ticket-call-label fragment custom" data-fragment-index="5">
+              <code data-label="PATCH /tickets/{ticketId}/metadata">PATCH /tickets/{ticketId}/metadata</code>
+            </div>
+            <div class="map-malicious-label fragment custom" data-fragment-index="7">Dynamic field exploit</div>
+
+            <article class="map-ticket-record fragment custom" data-fragment-index="5">
+              <span>ticket #10482</span>
+              <code class="map-normal-value">priority: "urgent"</code>
+              <code class="map-attack-value fragment custom" data-fragment-index="8">markdown: XSS payload</code>
+            </article>
+
+            <div class="map-injection-tag fragment custom" data-fragment-index="8">
+              <strong>SQL Injection</strong>
+            </div>
+
+            <article class="map-person map-maya fragment custom" data-fragment-index="9">
+              <img class="map-person-icon" src="/assets/material-person-maya.svg" alt="" />
+              <strong>Maya</strong>
+              <small>Customer support</small>
+            </article>
+
+            <div class="map-edge-label map-xss-label fragment custom" data-fragment-index="13">
+              <strong>Stored XSS</strong>
+              <span>ticket renders in Maya's browser</span>
+            </div>
+
+            <article class="map-xss-payload fragment custom" data-fragment-index="13">
+              <span>ticket.markdown</span>
+              <code>&lt;img src=x onerror='fetch("url", ...)'&gt;</code>
+            </article>
+
+            <div class="map-edge-label map-maya-call-label fragment custom" data-fragment-index="10">
+              <code data-label="PATCH /ticketing/{ticketId}">PATCH /ticketing/{ticketId}</code>
+            </div>
+
+            <article class="map-external-system fragment custom" data-fragment-index="11">
+              <svg class="map-server-icon" viewBox="0 0 32 32" aria-hidden="true">
+                <rect x="4" y="4" width="24" height="8" rx="2" />
+                <rect x="4" y="20" width="24" height="8" rx="2" />
+                <circle cx="9" cy="8" r="1.3" />
+                <circle cx="9" cy="24" r="1.3" />
+              </svg>
+              <span><strong>Regional ticketing</strong><code><span class="map-region-value">europe-west</span><span class="map-host-base">.ticketing.banana.com</span></code></span>
+            </article>
+
+            <div class="map-normal-request fragment custom" data-fragment-index="11">
+              <div class="map-request-state map-request-normal">
+                <code>{</code>
+                <code>&nbsp;&nbsp;role: "support",</code>
+                <code>&nbsp;&nbsp;region: "<span class="map-region-value">europe-west</span>"</code>
+                <code>}</code>
+              </div>
+              <div class="map-request-state map-request-attack">
+                <code>{</code>
+                <code>&nbsp;&nbsp;role: <span class="map-role-value">"admin"</span>,</code>
+                <code>&nbsp;&nbsp;region: <strong class="map-attack-url">"auth.banana.com/api/users/{attackerId}#"</strong></code>
+                <code>}</code>
+              </div>
+            </div>
+            <span class="fragment map-region-flash" data-fragment-index="12" aria-hidden="true"></span>
+
+            <div class="map-ssrf-label fragment custom" data-fragment-index="15">
+              <strong>SSRF</strong>
+            </div>
+            <div class="map-auth-body fragment custom" data-fragment-index="16">
+              <code>{</code>
+              <code>&nbsp;&nbsp;role: <span class="map-role-value">"admin"</span></code>
+              <code>}</code>
+            </div>
+          </div>
+
+          <aside class="notes">
+            Start with the auth service and establish the dangerous capability first: PATCH users can grant Admin.
+            Then add the support service and the ordinary user. The orange metadata endpoint is a forgotten gadget,
+            not a route an ordinary product user should need. Its normal path writes urgency. Injection changes the
+            selected column and stores the XSS payload as markdown. Next establish Maya's normal workflow. Her browser
+            calls the regional ticketing endpoint. Show its normal request body and match region to the hostname.
+            Reveal the stored image payload without changing the request. On the next click, its fetch call turns
+            Maya's request red, reaches the subsystem port, and replaces region with the attacker-controlled auth URL.
+            SSRF then bends the backend route toward auth while the malicious URL flashes. Finally, flash role: admin
+            in both request bodies, fill the auth PATCH red, and pulse Admin when it arrives. The next slide shows the
+            single payload that supplied both attacker-controlled values.
+          </aside>
+        </section>
+
+        <section class="lesson-slide attacker-payload-slide" data-background-color="#07101f">
+          <header class="lesson-heading">
+            <p class="eyebrow">One request</p>
+            <h2>The attacker payload.</h2>
+          </header>
+
+          <article class="payload-focus">
+            <pre><code><span class="code-method">PATCH</span> https://support.banana.com/api/tickets/10482/metadata
+Content-Type: application/json
+
+{
+  <span class="code-key">"field"</span>: <span class="code-string">"<span class="payload-focus-target payload-sql-target">priority = priority, markdown</span>"</span>,
+  <span class="code-key">"value"</span>: <span class="code-string">"<span class="payload-focus-target payload-xss-target">&lt;img src=x onerror=\"</span>fetch(
+    '/ticketing/10482',
+    {
+      method: 'PATCH',
+      body: JSON.stringify({
+        role: 'admin',
+        region: '<span class="payload-focus-target payload-ssrf-target">auth.banana.com/api/users/1337#</span>'
+      })
+    }
+  )\"&gt;"</span>
+}</code></pre>
+          </article>
+
+          <div class="payload-callout payload-callout-sql fragment custom" data-fragment-index="0">SQL injection</div>
+          <div class="payload-callout payload-callout-xss fragment custom" data-fragment-index="1">XSS</div>
+          <div class="payload-callout payload-callout-ssrf fragment custom" data-fragment-index="2">SSRF</div>
+
+          <aside class="notes">
+            Keep the complete request on screen. Reveal the three pivots in order: the field expression changes SQL
+            grammar, the image event handler creates script execution, and the region value controls the backend
+            destination. The next three slides explain each layer separately.
+          </aside>
+        </section>
+
+        <section class="lesson-slide compact-code-lesson sql-rework-slide" data-background-color="#07101f">
+          <header class="lesson-heading">
+            <p class="eyebrow">Step 1 · The honest mistake</p>
+            <h2>SQL injection</h2>
+          </header>
+
+          <div class="code-stage">
+            <article class="sql-transform-panel">
+              <div class="code-panel-bar"><span>ticket-metadata.ts</span><span>TypeScript</span></div>
+              <div class="sql-code-stack">
+                <pre class="sql-code-state sql-code-initial"><code><span class="syntax-keyword">const</span> { field, value } = req.body;
+
+<span class="syntax-keyword">await</span> db.query(sql<span class="syntax-punctuation">`</span>
+  <span class="syntax-sql">UPDATE</span> tickets
+  <span class="syntax-sql">SET</span> ${<span class="sql-makesql-target">makeSql</span>(field)} = ${value}
+  <span class="syntax-sql">WHERE</span> id = ${id}
+<span class="syntax-punctuation">`</span>);</code></pre>
+
+                <pre class="sql-code-state fragment current-visible" data-fragment-index="1"><code><span class="syntax-keyword">const</span> { field, value } = {
+  field: <span class="syntax-string">"priority = priority, markdown"</span>,
+  value: <span class="syntax-string">"&lt;img src=x onerror=\"fetch(...)\"&gt;"</span>,
+};
+
+<span class="syntax-keyword">await</span> db.query(sql<span class="syntax-punctuation">`</span>
+  <span class="syntax-sql">UPDATE</span> tickets
+  <span class="syntax-sql">SET</span> ${makeSql(field)} = ${value}
+  <span class="syntax-sql">WHERE</span> id = ${id}
+<span class="syntax-punctuation">`</span>);</code></pre>
+
+                <pre class="sql-code-state fragment current-visible" data-fragment-index="2"><code><span class="syntax-keyword">await</span> db.query(sql<span class="syntax-punctuation">`</span>
+  <span class="syntax-sql">UPDATE</span> tickets
+  <span class="syntax-sql">SET</span> ${makeSql(<span class="syntax-string">"priority = priority, markdown"</span>)} =
+      <span class="syntax-string">${"&lt;img src=x onerror=\"fetch(...)\"&gt;"}</span>
+  <span class="syntax-sql">WHERE</span> id = <span class="syntax-string">${10482}</span>
+<span class="syntax-punctuation">`</span>);</code></pre>
+
+                <pre class="sql-code-state fragment current-visible" data-fragment-index="3"><code><span class="syntax-keyword">await</span> db.query(sql<span class="syntax-punctuation">`</span>
+  <span class="syntax-sql">UPDATE</span> tickets
+  <span class="syntax-sql">SET</span> <span class="code-danger">priority = priority, markdown</span> =
+      <span class="syntax-string">${"&lt;img src=x onerror=\"fetch(...)\"&gt;"}</span>
+  <span class="syntax-sql">WHERE</span> id = <span class="syntax-string">${10482}</span>
+<span class="syntax-punctuation">`</span>);</code></pre>
+
+                <pre class="sql-code-state fragment current-visible" data-fragment-index="4"><code><span class="syntax-keyword">await</span> db.query(
+  <span class="syntax-punctuation">`</span><span class="syntax-sql">UPDATE</span> tickets
+   <span class="syntax-sql">SET</span> <span class="code-danger">priority = priority, markdown</span> = <span class="code-variable">$1</span>
+   <span class="syntax-sql">WHERE</span> id = <span class="code-variable">$2</span><span class="syntax-punctuation">`</span>,
+  [
+    <span class="syntax-string">"&lt;img src=x onerror=\"fetch(...)\"&gt;"</span>,
+    10482,
+  ],
+);</code></pre>
+
+                <pre class="sql-code-state sql-code-safe fragment current-visible" data-fragment-index="5"><code><span class="syntax-keyword">const</span> MetadataPatch = z.object({
+  field: <span class="code-safe">z.enum</span>([<span class="syntax-string">"priority"</span>, <span class="syntax-string">"status"</span>, <span class="syntax-string">"assignee"</span>]),
+  value: z.string(),
+});
+
+<span class="syntax-keyword">const</span> { field, value } = <span class="code-safe">MetadataPatch.parse(req.body)</span>;
+
+<span class="syntax-keyword">await</span> db.query(sql<span class="syntax-punctuation">`</span>
+  <span class="syntax-sql">UPDATE</span> tickets <span class="syntax-sql">SET</span> ${makeSql(field)} = ${value}
+  <span class="syntax-sql">WHERE</span> id = ${id}
+<span class="syntax-punctuation">`</span>);</code></pre>
+              </div>
+              <span class="sql-makesql-trigger fragment custom" data-fragment-index="0" aria-hidden="true"></span>
+            </article>
+          </div>
+
+          <aside class="notes">
+            Start with the original handler and flash makeSql. Then replace req.body with the actual JSON. Move field
+            and value into their interpolation sites. Next reveal the SQL grammar produced by makeSql. The database
+            receives that grammar with the payload safely bound as $1, so the value never breaks out. Finally replace
+            the open-ended field with a Zod enum before makeSql sees it.
+          </aside>
+        </section>
+
+        <section class="lesson-slide compact-code-lesson xss-rework-slide" data-background-color="#07101f">
+          <header class="lesson-heading term-heading">
+            <p class="eyebrow">Step 2 · Validated, but not well</p>
+            <h2>XSS</h2>
+            <p class="term-subtitle">Cross-site scripting</p>
+          </header>
+
+          <div class="code-stage">
+            <article class="code-stage-frame fragment current-visible" data-fragment-index="0">
+              <div class="code-panel-bar"><span>the expected write path</span><span>server</span></div>
+              <pre><code>app.post(<span class="syntax-string">"/tickets/:id/markdown"</span>, (req, res) =&gt; {
+  <span class="syntax-keyword">const</span> markdown = validateMarkdown(req.body.markdown);
+  <span class="syntax-keyword">return</span> tickets.update(req.params.id, { markdown });
+});</code></pre>
+            </article>
+
+            <article class="code-stage-frame fragment current-visible" data-fragment-index="1">
+              <div class="code-panel-bar"><span>the path the payload took</span><span>validation never runs</span></div>
+              <pre><code><span class="code-method">PATCH</span> /tickets/10482/metadata
+{ field: <span class="code-string">"priority = priority, markdown"</span>, value: <span class="code-danger">payload</span> }
+
+<span class="code-muted">// SQL injection writes directly to tickets.markdown</span></code></pre>
+            </article>
+
+            <article class="code-stage-frame xss-render-frame fragment current-visible" data-fragment-index="2">
+              <div class="code-panel-bar"><span>TicketBody.tsx</span><span>client</span></div>
+              <div class="xss-code-stack">
+                <pre class="xss-code-state xss-code-unsafe"><code><span class="syntax-keyword">const</span> html = marked.parse(ticket.markdown);
+
+<span class="syntax-keyword">return</span> (
+  &lt;article <span class="code-danger">dangerouslySetInnerHTML={{ __html: html }}</span> /&gt;
+);</code></pre>
+
+                <pre class="xss-code-state xss-code-safe fragment current-visible" data-fragment-index="3"><code><span class="syntax-keyword">const</span> html = marked.parse(ticket.markdown);
+<span class="syntax-keyword">const</span> safeHtml = <span class="code-safe">DOMPurify.sanitize(html)</span>;
+
+<span class="syntax-keyword">return</span> (
+  &lt;article dangerouslySetInnerHTML={{ __html: safeHtml }} /&gt;
+);</code></pre>
+              </div>
+            </article>
+          </div>
+
+          <aside class="notes">
+            The application validated the normal POST route. Injection used another write path. Stored data then
+            crossed the actual security boundary in the browser. The client creates HTML, so that is where this
+            application must sanitize it. The route validation can remain as an earlier independent defense.
+          </aside>
+        </section>
+
+        <section class="lesson-slide compact-code-lesson ssrf-rework-slide" data-background-color="#07101f">
+          <header class="lesson-heading term-heading">
+            <p class="eyebrow">Surely no one will send the wrong data</p>
+            <h2>SSRF</h2>
+            <p class="term-subtitle">Server-side request forgery</p>
+          </header>
+
+          <div class="code-stage">
+            <article class="ssrf-transform-panel">
+              <div class="code-panel-bar"><span>regional-ticketing.ts</span><span>support service</span></div>
+              <div class="ssrf-code-stack">
+                <pre class="ssrf-code-state ssrf-code-initial"><code><span class="syntax-keyword">const</span> { role, region } = req.body;
+<span class="syntax-keyword">const</span> target = <span class="syntax-keyword">new</span> URL(
+  <span class="syntax-string">`https://${region}.ticketing.banana.com/ticketing/${ticketId}`</span>,
+);
+
+<span class="syntax-keyword">await</span> serviceClient.patch(target, { role });</code></pre>
+
+                <pre class="ssrf-code-state fragment current-visible" data-fragment-index="0"><code><span class="syntax-keyword">const</span> { role, region } = {
+  role: <span class="syntax-string">"admin"</span>,
+  region: <span class="syntax-string">"auth.banana.com/api/users/1337#"</span>,
+};
+<span class="syntax-keyword">const</span> target = <span class="syntax-keyword">new</span> URL(
+  <span class="syntax-string">`https://${region}.ticketing.banana.com/ticketing/${ticketId}`</span>,
+);
+
+<span class="syntax-keyword">await</span> serviceClient.patch(target, { role });</code></pre>
+
+                <pre class="ssrf-code-state ssrf-url-state fragment custom" data-fragment-index="1"><code><span class="syntax-keyword">const</span> target = <span class="syntax-keyword">new</span> URL(
+  <span class="syntax-string">"https://auth.banana.com/api/users/1337#<span class="ssrf-ignored-suffix">.ticketing.banana.com/ticketing/10482</span>"</span>,
+);
+
+<span class="syntax-keyword">await</span> serviceClient.patch(target, { role: <span class="syntax-string">"admin"</span> });</code></pre>
+              </div>
+              <span class="ssrf-fragment-trigger fragment custom" data-fragment-index="2" aria-hidden="true"></span>
+            </article>
+
+            <article class="code-stage-frame fragment current-visible" data-fragment-index="3">
+              <div class="code-panel-bar"><span>request sent by the backend</span><span>borrowed service identity</span></div>
+              <pre><code><span class="code-method">PATCH</span> https://auth.banana.com/api/users/1337
+Authorization: Bearer &lt;support-service&gt;
+
+{ role: <span class="code-danger">"admin"</span> }</code></pre>
+            </article>
+
+            <article class="code-stage-frame code-stage-safe fragment current-visible" data-fragment-index="4">
+              <div class="code-panel-bar"><span>regional-ticketing.ts</span><span>the server owns the URLs</span></div>
+              <pre><code><span class="syntax-keyword">const</span> Region = <span class="code-safe">z.enum</span>([<span class="syntax-string">"europe-west"</span>, <span class="syntax-string">"us-central"</span>]);
+<span class="syntax-keyword">const</span> hosts = {
+  <span class="syntax-string">"europe-west"</span>: <span class="syntax-string">"https://europe-west.ticketing.banana.com"</span>,
+  <span class="syntax-string">"us-central"</span>: <span class="syntax-string">"https://us-central.ticketing.banana.com"</span>,
+};
+
+<span class="syntax-keyword">const</span> region = <span class="code-safe">Region.parse(req.body.region)</span>;
+<span class="syntax-keyword">const</span> target = <span class="syntax-keyword">new</span> URL(<span class="syntax-string">`/ticketing/${ticketId}`</span>, hosts[region]);
+<span class="syntax-keyword">await</span> serviceClient.patch(target, { role });</code></pre>
+            </article>
+          </div>
+
+          <aside class="notes">
+            Replace req.body with the concrete attacker values, then substitute region into new URL. On the next
+            click, dim only the suffix after the hash because it becomes a fragment and is not sent to the server.
+            The backend then sends the request with its own identity. Finish by parsing a small region vocabulary and
+            letting the server map it to a complete destination.
+          </aside>
+        </section>
+
+        <section class="defense-slide" data-background-color="#07101f">
+          <header class="defense-heading">
+            <p class="eyebrow">Defense in depth</p>
+            <h2>Break the chain anywhere.</h2>
+            <p>Any one of these checks would have contained the incident.</p>
+          </header>
+
+          <div class="defense-flow" aria-label="Attack chain with independent defensive controls">
+            <div class="defense-node"><span>01</span><strong>Injection</strong></div>
+            <div class="defense-arrow">→</div>
+            <div class="defense-node"><span>02</span><strong>Stored XSS</strong></div>
+            <div class="defense-arrow">→</div>
+            <div class="defense-node"><span>03</span><strong>SSRF</strong></div>
+            <div class="defense-arrow">→</div>
+            <div class="defense-node"><span>04</span><strong>Weak authorization</strong></div>
+            <div class="defense-arrow">→</div>
+            <div class="defense-node defense-impact">
+              <span>05</span>
+              <strong>Admin access</strong>
+              <em class="blocked-stamp fragment custom" data-fragment-index="4">Blocked</em>
+            </div>
+          </div>
+
+          <div class="defense-options">
+            <article class="defense-option fragment custom" data-fragment-index="0">
+              <span>Stop 01</span>
+              <strong>Allowlist column identifiers</strong>
+            </article>
+            <article class="defense-option fragment custom" data-fragment-index="1">
+              <span>Stop 02</span>
+              <strong>Sanitize rendered HTML</strong>
+            </article>
+            <article class="defense-option fragment custom" data-fragment-index="2">
+              <span>Stop 03</span>
+              <strong>Allowlist service destinations</strong>
+            </article>
+            <article class="defense-option fragment custom" data-fragment-index="3">
+              <span>Stop 04</span>
+              <strong>Authorize the role change</strong>
+            </article>
+          </div>
+
+          <div class="defense-takeaway fragment custom" data-fragment-index="4">
+            One bug should not be enough.
+          </div>
+
+          <aside class="notes">
+            Each defense stands on its own. An identifier allowlist prevents the write. Safe rendering prevents code
+            execution. A destination allowlist prevents the internal request. Operation-level authorization prevents
+            the role change. Defense in depth turns a bug into a contained bug.
+          </aside>
+        </section>
+
+        <section class="scene-slide campaign-navigation-slide" data-background-color="#07101f">
+          <div class="scene-label">Another perfectly normal page</div>
+
+          <div class="browser-window campaign-browser">
+            <div class="browser-chrome">
+              <div class="window-controls" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="address-bar campaign-address">
+                <img class="lock campaign-address-lock" src="/assets/lock.svg" alt="" />
+                <span class="campaign-address-before campaign-address-placeholder fragment fade-out" data-fragment-index="0">Search or enter address</span>
+                <span class="campaign-address-after fragment fade-in" data-fragment-index="0">campaigns.banana.com/free-coffee</span>
+              </div>
+            </div>
+
+            <div class="campaign-loading fragment custom" data-fragment-index="0"></div>
+            <div class="campaign-home campaign-blank fragment fade-out" data-fragment-index="0"></div>
+            <div class="campaign-page fragment fade-in" data-fragment-index="0">
+              <div class="coffee-art" aria-hidden="true"><span>☕</span></div>
+              <div class="campaign-copy">
+                <span class="campaign-kicker">Banana perks</span>
+                <h2>Free coffee Friday</h2>
+                <p>Thanks for keeping things moving. Your next coffee is on us.</p>
+                <div class="campaign-claim">Claim your coffee</div>
+              </div>
+            </div>
+
+            <div class="devtools-shell fragment custom" data-fragment-index="1">
+              <div class="devtools-tabs"><span>Elements</span><span class="active">Network</span><span>Sources</span><span>Console</span></div>
+
+              <div class="devtools-state devtools-network">
+                <div class="network-toolbar"><span>●</span><span>All</span><span>Fetch/XHR</span><span>JS</span></div>
+                <div class="network-head"><span>Name</span><span>Status</span><span>Type</span><span>Initiator</span></div>
+                <div class="network-row"><span>free-coffee</span><span>200</span><span>document</span><span>Other</span></div>
+                <div class="network-row"><span>fresh-coffee/index.js</span><span>200</span><span>script</span><span>free-coffee:18</span></div>
+                <div class="network-row"><span>coffee-hero.webp</span><span>200</span><span>webp</span><span>free-coffee:42</span></div>
+                <div class="network-row network-danger"><span>users/1337</span><span>200</span><span>fetch</span><span>index.js:1</span></div>
+              </div>
+
+              <div class="devtools-state devtools-source fragment current-visible" data-fragment-index="2">
+                <div class="source-path">campaigns.banana.com / fresh-coffee / index.js</div>
+                <pre><code><span class="syntax-keyword">await</span> fetch(
+  <span class="syntax-string">"https://auth.banana.com/api/users/1337"</span>,
+  {
+    method: <span class="syntax-string">"PATCH"</span>,
+    credentials: <span class="syntax-string">"include"</span>,
+    headers: { <span class="syntax-string">"Content-Type"</span>: <span class="syntax-string">"application/json"</span> },
+    body: JSON.stringify({ role: <span class="code-danger">"admin"</span> }),
+  },
+);</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <aside class="notes">
+            The first advance navigates from the blank tab to the campaign. The second opens DevTools on that same
+            page; Network shows fresh-coffee/index.js and its request to users/1337. The third opens the source. The
+            contractor account or publishing pipeline was compromised, so a page editor gained script execution on
+            campaigns.banana.com without direct auth-service access.
+          </aside>
+        </section>
+
+        <section class="lesson-slide cors-overview-slide" data-background-color="#07101f">
+          <header class="lesson-heading term-heading">
+            <h2>The browser tried to defend against this.</h2>
+            <p class="term-subtitle">Cross-origin resource sharing</p>
+          </header>
+
+          <div class="cors-conversation" aria-label="CORS preflight conversation">
+            <div class="cors-party cors-browser-party fragment custom" data-fragment-index="0">
+              <span>Browser page</span>
+              <strong>campaigns.banana.com</strong>
+            </div>
+            <div class="cors-message cors-preflight fragment custom" data-fragment-index="1">
+              <div class="cors-message-copy">
+                <strong>Preflight request</strong>
+                <code>OPTIONS /api/users/1337</code>
+                <span>Origin: https://campaigns.banana.com</span>
+                <span>Access-Control-Request-Method: PATCH</span>
+                <span>Access-Control-Request-Headers: content-type</span>
+              </div>
+              <i>→</i>
+            </div>
+            <div class="cors-party cors-api-party fragment custom" data-fragment-index="1">
+              <span>Target API</span>
+              <strong>auth.banana.com</strong>
+            </div>
+            <div class="cors-message cors-answer fragment custom" data-fragment-index="2">
+              <i>←</i>
+              <div class="cors-message-copy">
+                <strong>Preflight response</strong>
+                <span>Access-Control-Allow-Origin: https://campaigns.banana.com</span>
+                <span>Access-Control-Allow-Methods: PATCH</span>
+                <span>Access-Control-Allow-Headers: content-type</span>
+                <span>Access-Control-Allow-Credentials: true</span>
+              </div>
+            </div>
+            <div class="cors-message cors-actual fragment custom" data-fragment-index="3">
+              <div class="cors-message-copy">
+                <strong>Actual request</strong>
+                <code>PATCH /api/users/1337</code>
+                <span>Origin: https://campaigns.banana.com</span>
+                <span>Cookie: session=&lt;admin&gt;</span>
+                <span>{ role: "admin" }</span>
+              </div>
+              <i>→</i>
+            </div>
+            <p class="cors-verdict fragment custom" data-fragment-index="4">The browser enforced the server's answer.</p>
+          </div>
+
+          <aside class="notes">
+            The browser automatically asks whether campaigns.banana.com may send a credentialed JSON PATCH. The
+            preflight names the intended method and non-simple header. Auth reflects permission for that origin, so
+            the browser sends the malicious mutation with an admin's cookie. CORS enforced the answer correctly; the
+            server supplied the wrong answer.
+          </aside>
+        </section>
+
+        <section class="lesson-slide compact-code-lesson cors-config-slide" data-background-color="#07101f">
+          <header class="lesson-heading">
+            <h2>But it was misconfigured.</h2>
+          </header>
+
+          <div class="code-stage">
+            <article class="code-stage-frame cors-config-panel">
+              <div class="code-panel-bar"><span>cors.ts</span><span>CORS policy</span></div>
+              <div class="cors-code-stack">
+                <pre class="cors-code-state cors-code-unsafe"><code><span class="syntax-keyword">if</span> (origin.endsWith(<span class="syntax-string">".banana.com"</span>)) {
+  allowOrigin(origin, { credentials: <span class="syntax-keyword">true</span> });
+}
+
+<span class="code-danger">campaigns.banana.com  // allowed</span></code></pre>
+
+                <pre class="cors-code-state cors-code-safe fragment current-visible" data-fragment-index="0"><code><span class="syntax-keyword">const</span> allowedOrigins = <span class="syntax-keyword">new</span> Set([
+  <span class="syntax-string">"https://admin.banana.com"</span>,
+  <span class="syntax-string">"https://support.banana.com"</span>,
+]);
+
+<span class="syntax-keyword">if</span> (<span class="code-safe">!allowedOrigins.has(origin)</span>) <span class="syntax-keyword">throw</span> InvalidOrigin;
+<span class="code-safe">allowOrigin(origin, { credentials: <span class="syntax-keyword">true</span> });</span></code></pre>
+              </div>
+            </article>
+          </div>
+
+          <aside class="notes">
+            A shared company suffix is not a trust boundary. Exact origins make the decision reviewable. The
+            campaign origin is absent because publishing a campaign page must not grant authority over users.
+          </aside>
+        </section>
+
+        <section class="lesson-slide cors-gotcha-slide" data-background-color="#07101f">
+          <header class="lesson-heading term-heading">
+            <h2>GET is only partially protected.</h2>
+            <p class="term-subtitle">The browser can send the request without a preflight</p>
+          </header>
+
+          <div class="simple-request-story">
+            <div class="simple-story-party simple-story-source fragment custom" data-fragment-index="0">
+              <span>Untrusted page</span>
+              <strong>campaigns.banana.com</strong>
+            </div>
+            <div class="simple-story-party simple-story-target fragment custom" data-fragment-index="0">
+              <span>Cookie-authenticated API</span>
+              <strong>auth.banana.com</strong>
+            </div>
+
+            <div class="simple-story-request fragment custom" data-fragment-index="1">
+              <div class="simple-story-request-copy">
+                <strong>No OPTIONS request</strong>
+                <code>GET /api/users/1337/promote</code>
+                <span>Cookie: session=&lt;admin&gt;</span>
+                <span>Sec-Fetch-Site: same-site</span>
+              </div>
+              <i class="simple-story-request-arrow">→</i>
+            </div>
+
+            <div class="simple-story-result fragment custom" data-fragment-index="2">
+              <strong>Role changed</strong>
+              <em>200 OK</em>
+            </div>
+            <div class="simple-story-blocked">
+              <div class="simple-story-response fragment custom" data-fragment-index="3">
+                <i>←</i><span>The browser cannot read the data.</span>
+              </div>
+              <strong class="simple-story-rule fragment custom" data-fragment-index="4">Never mutate state in a GET.</strong>
+            </div>
+          </div>
+
+          <aside class="notes">
+            GET, HEAD, and POST can be CORS-safelisted methods. A GET with safelisted headers does not need a
+            preflight. The server performs the operation before the browser decides whether the hostile page may
+            expose the response to the hostile script. Safe HTTP methods must stay read-only. Here the two hosts are
+            also same-site, so a SameSite cookie may still accompany the cross-origin request. Sources: https://fetch.spec.whatwg.org/
+            and https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
+          </aside>
+        </section>
+
+        <section class="lesson-slide cors-gotcha-slide" data-background-color="#07101f">
+          <header class="lesson-heading term-heading">
+            <h2>Forms skip preflight too.</h2>
+            <p class="term-subtitle">The web keeps old submission formats working across origins</p>
+          </header>
+
+          <div class="form-request-story">
+            <article class="form-attack-card fragment custom" data-fragment-index="0">
+              <div class="form-attack-bar"><span>campaigns.banana.com</span><span>hidden form</span></div>
+              <pre><code>&lt;form action="https://auth.banana.com/api/users/1337/promote"
+      method="POST"&gt;
+  &lt;input name="role" value="admin"&gt;
+&lt;/form&gt;</code></pre>
+            </article>
+
+            <div class="form-story-request fragment custom" data-fragment-index="1">
+              <div>
+                <strong>No OPTIONS request</strong>
+                <code>POST /api/users/1337/promote</code>
+                <span>Content-Type: application/x-www-form-urlencoded</span>
+                <span>Cookie: session=&lt;admin&gt;</span>
+                <span>role=admin</span>
+              </div>
+              <i>→</i>
+            </div>
+
+            <div class="form-story-api fragment custom" data-fragment-index="2">
+              <span>Cookie-authenticated API</span>
+              <b>auth.banana.com</b>
+              <div class="form-story-result">
+                <strong>Role changed</strong>
+                <em>200 OK</em>
+              </div>
+            </div>
+
+            <div class="form-story-fix fragment custom" data-fragment-index="3">
+              <span>Accept form submissions?</span>
+              <strong>Require and verify a CSRF token.</strong>
+            </div>
+          </div>
+
+          <aside class="notes">
+            HTML forms can submit cross-origin GET and POST requests using form-urlencoded, multipart, or plain-text
+            bodies. Those shapes are deliberately compatible with the old web and do not preflight. If a
+            cookie-authenticated mutation accepts them, use a CSRF token. The response being unreadable does not
+            undo the mutation. Sources: https://html.spec.whatwg.org/multipage/form-control-infrastructure.html and
+            https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
+          </aside>
+        </section>
+
+        <section class="lesson-slide csrf-token-explainer-slide" data-background-color="#07101f">
+          <header class="lesson-heading term-heading">
+            <h2>What is a CSRF token?</h2>
+            <p class="term-subtitle">An unpredictable value a hostile origin cannot read or guess</p>
+          </header>
+
+          <div class="csrf-token-explainer-stage">
+            <span class="csrf-life-trigger csrf-life-step-1 fragment custom" data-fragment-index="0"></span>
+            <span class="csrf-life-trigger csrf-life-step-2 fragment custom" data-fragment-index="1"></span>
+            <span class="csrf-life-trigger csrf-life-step-3 fragment custom" data-fragment-index="2"></span>
+            <span class="csrf-life-trigger csrf-life-step-4 fragment custom" data-fragment-index="3"></span>
+            <span class="csrf-life-trigger csrf-life-step-5 fragment custom" data-fragment-index="4"></span>
+            <span class="csrf-life-trigger csrf-life-step-6 fragment custom" data-fragment-index="5"></span>
+            <span class="csrf-life-trigger csrf-life-step-7 fragment custom" data-fragment-index="6"></span>
+            <span class="csrf-life-trigger csrf-life-step-8 fragment custom" data-fragment-index="7"></span>
+            <span class="csrf-life-trigger csrf-life-step-9 fragment custom" data-fragment-index="8"></span>
+
+            <div class="csrf-life-scene">
+              <article class="csrf-life-node csrf-life-client">
+                <header>
+                  <span class="csrf-life-trusted-name">banana-web</span>
+                  <span class="csrf-life-attacker-name">attacker.com</span>
+                  <small>browser</small>
+                </header>
+
+                <div class="csrf-life-client-idle">
+                  <span>Form page</span>
+                  <strong>Waiting for a CSRF token</strong>
+                </div>
+
+                <pre class="csrf-life-code csrf-life-trusted-form"><code>&lt;form method="POST"&gt;
+  &lt;input type="hidden"
+    name="_csrf" value="7f3c…" /&gt;
+&lt;/form&gt;</code></pre>
+
+                <pre class="csrf-life-code csrf-life-trusted-payload"><code>POST /api/users/1337/promote
+Cookie: session=&lt;admin&gt;
+_csrf=7f3c…</code></pre>
+
+                <pre class="csrf-life-code csrf-life-attacker-form"><code>&lt;form action="https://auth.banana.com/…"
+      method="POST"&gt;
+  &lt;input name="role" value="admin" /&gt;
+&lt;/form&gt;</code></pre>
+
+                <pre class="csrf-life-code csrf-life-attacker-payload"><code>POST /api/users/1337/promote
+Cookie: session=&lt;admin&gt; ✓
+_csrf=&lt;missing&gt; ✕</code></pre>
+              </article>
+
+              <article class="csrf-life-node csrf-life-server">
+                <header><span>auth.banana.com</span><small>server</small></header>
+
+                <div class="csrf-life-server-idle">
+                  <span>Session store</span>
+                  <strong>Session found</strong>
+                </div>
+
+                <pre class="csrf-life-code csrf-life-server-code"><code>session.csrf ??=
+  randomBytes(32)
+    .toString("base64url")</code></pre>
+
+                <div class="csrf-life-server-result csrf-life-server-success">
+                  <span>Token matches</span><strong>200 OK</strong>
+                </div>
+
+                <div class="csrf-life-server-result csrf-life-server-failure">
+                  <span>Token missing</span><strong>403 Forbidden</strong>
+                </div>
+              </article>
+
+              <div class="csrf-life-flow csrf-life-token-request">
+                <span>Request the CSRF token</span>
+                <i></i><b></b>
+              </div>
+
+              <div class="csrf-life-flow csrf-life-token-response">
+                <span>CSRF token</span>
+                <i></i><b>7f3c…</b>
+                <div class="csrf-life-delivery-methods">
+                  <em>Server-rendered into HTML</em>
+                  <em>Same-origin GET or POST</em>
+                  <em>Cross-origin only through exact CORS</em>
+                </div>
+              </div>
+
+              <div class="csrf-life-flow csrf-life-token-blocked">
+                <span>Cannot read a token tied to this session</span>
+                <i></i><b>✕</b>
+              </div>
+
+              <div class="csrf-life-flow csrf-life-trusted-submit">
+                <span>Cookie + explicit token</span>
+                <i></i><b>POST</b>
+              </div>
+
+              <div class="csrf-life-flow csrf-life-hostile-submit">
+                <span>Cookie, but no token</span>
+                <i></i><b>POST</b>
+              </div>
+            </div>
+
+            <p class="csrf-token-explainer-takeaway">
+              <span>The cookie identifies the session.</span>
+              <span>The token shows the requester could read protected application state.</span>
+            </p>
+          </div>
+
+          <aside class="notes">
+            The first click establishes the browser and server, then requests a token. The server creates a random
+            per-session value. It can arrive in server-rendered HTML, a same-origin response, or a response exposed to
+            an exact trusted origin through CORS. The trusted form sends its hidden token and succeeds. Then the same
+            browser becomes attacker.com: it can build equivalent HTML and receives the session cookie automatically,
+            but it cannot read the protected token. Its mutation therefore fails. Logout or session expiry invalidates
+            the token with the session. Prefer the framework's built-in implementation. XSS or a CORS leak can defeat
+            the token's read-protection assumption. Source:
+            https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
+          </aside>
+        </section>
+
+        <section class="lesson-slide csrf-token-rework-slide" data-background-color="#07101f">
+          <header class="lesson-heading term-heading">
+            <h2>Do I need a CSRF token?</h2>
+            <p class="term-subtitle">Ask what an attacker can make the browser send</p>
+          </header>
+
+          <div class="csrf-decision-tree">
+            <span class="csrf-tree-trigger csrf-tree-step-1 fragment custom" data-fragment-index="0"></span>
+            <span class="csrf-tree-trigger csrf-tree-step-2 fragment custom" data-fragment-index="1"></span>
+            <span class="csrf-tree-trigger csrf-tree-step-3 fragment custom" data-fragment-index="2"></span>
+            <span class="csrf-tree-trigger csrf-tree-step-4 fragment custom" data-fragment-index="3"></span>
+
+            <svg class="csrf-tree-lines" viewBox="0 0 1360 520" aria-hidden="true">
+              <path class="csrf-tree-line csrf-tree-line-step-2" pathLength="1" d="M 290 226 C 336 226 340 130 390 130" />
+              <path class="csrf-tree-line csrf-tree-line-step-2" pathLength="1" d="M 290 226 C 336 226 340 390 390 390" />
+              <path class="csrf-tree-line csrf-tree-line-step-3" pathLength="1" d="M 710 130 C 752 130 756 70 800 70" />
+              <path class="csrf-tree-line csrf-tree-line-step-3" pathLength="1" d="M 710 130 C 752 130 756 270 800 270" />
+              <path class="csrf-tree-line csrf-tree-line-step-4" pathLength="1" d="M 1080 270 C 1122 270 1126 180 1170 180" />
+              <path class="csrf-tree-line csrf-tree-line-step-4" pathLength="1" d="M 1080 270 C 1122 270 1126 390 1170 390" />
+            </svg>
+
+            <span class="csrf-tree-answer csrf-tree-answer-root-yes">Yes</span>
+            <span class="csrf-tree-answer csrf-tree-answer-root-no">No</span>
+            <span class="csrf-tree-answer csrf-tree-answer-simple-yes">Yes</span>
+            <span class="csrf-tree-answer csrf-tree-answer-simple-no">No</span>
+            <span class="csrf-tree-answer csrf-tree-answer-cors-yes">Yes</span>
+            <span class="csrf-tree-answer csrf-tree-answer-cors-no">No</span>
+
+            <article class="csrf-tree-node csrf-tree-question csrf-tree-root">
+              <strong>Cookie authentication?</strong>
+              <span>The browser attaches credentials</span>
+            </article>
+
+            <article class="csrf-tree-node csrf-tree-question csrf-tree-simple">
+              <strong>Simple request accepted?</strong>
+              <span>Roughly non-JSON</span>
+            </article>
+
+            <article class="csrf-tree-node csrf-tree-result csrf-tree-no-cookie">
+              <strong>No CSRF token</strong>
+              <span>Credentials are not automatic</span>
+            </article>
+
+            <article class="csrf-tree-node csrf-tree-result csrf-tree-token-simple">
+              <strong>Use a CSRF token</strong>
+              <span>The browser can send the mutation</span>
+            </article>
+
+            <article class="csrf-tree-node csrf-tree-question csrf-tree-cors">
+              <strong>Exact CORS allowlist?</strong>
+              <span>Every mutation must preflight</span>
+            </article>
+
+            <article class="csrf-tree-node csrf-tree-result csrf-tree-cors-defense">
+              <strong>CORS can defend it</strong>
+              <span>The token is optional</span>
+            </article>
+
+            <article class="csrf-tree-node csrf-tree-result csrf-tree-token-cors">
+              <strong>Use a CSRF token</strong>
+              <span>Broad CORS is not a defense</span>
+            </article>
+          </div>
+
+          <aside class="notes">
+            Start with the authentication mechanism. Without browser-attached credentials, classic CSRF does not
+            apply. With cookie authentication, ask whether the endpoint accepts a simple request. This roughly means
+            a GET, HEAD, or POST using a form-compatible content type rather than JSON. If it does, use a CSRF token.
+            If every mutation requires preflight, an exact credentialed CORS allowlist can be the CSRF defense. A
+            broad or reflected allowlist cannot. Origin checks, SameSite cookies, and Sec-Fetch-Site remain useful
+            layers. Source:
+            https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
+          </aside>
+        </section>
+
+        <section class="lesson-slide custom-header-slide" data-background-color="#07101f">
+          <header class="lesson-heading term-heading">
+            <h2>Why does an application-only header help?</h2>
+            <p class="term-subtitle">It forces a cross-origin script through CORS preflight</p>
+          </header>
+
+          <div class="custom-header-stage">
+            <div class="custom-header-rule fragment custom" data-fragment-index="0">
+              <span>Server rule</span>
+              <code>Reject every mutation without X-Banana-App: 1</code>
+            </div>
+
+            <article class="custom-header-path custom-header-form fragment custom" data-fragment-index="1">
+              <span>HTML form</span>
+              <code>Cannot set X-Banana-App</code>
+              <i>→</i>
+              <strong>Rejected by the API</strong>
+            </article>
+
+            <article class="custom-header-path custom-header-fetch fragment custom" data-fragment-index="2">
+              <span>Cross-origin fetch</span>
+              <code>X-Banana-App: 1</code>
+              <i>→</i>
+              <div><code>OPTIONS</code><small>Origin not allowed</small></div>
+              <i>✕</i>
+              <strong>Real request never sent</strong>
+            </article>
+
+            <p class="custom-header-takeaway fragment custom" data-fragment-index="3">
+              The header is not secret. Requiring it makes CORS run before the mutation.
+            </p>
+          </div>
+
+          <aside class="notes">
+            This defense is a consequence of CORS rules. A form cannot attach arbitrary request headers. JavaScript
+            can request X-Banana-App, but because it is not CORS-safelisted, the browser first sends OPTIONS. With an
+            exact origin allowlist, campaigns.banana.com fails that preflight and the actual mutation is never sent.
+            The server must reject every mutation missing the header, or the attacker can fall back to a form-shaped
+            request. The header is not authentication. Curl, backend clients, an allowed hostile origin, or XSS can
+            still send it. Sources: https://fetch.spec.whatwg.org/ and
+            https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
+          </aside>
+        </section>
+
+        <section class="lesson-slide samesite-boundary-slide" data-background-color="#07101f">
+          <header class="lesson-heading term-heading">
+            <h2>Can SameSite be enough?</h2>
+            <p class="term-subtitle">Sometimes. Its boundary is the site, not the origin.</p>
+          </header>
+
+          <div class="samesite-stage">
+            <article class="samesite-conditions fragment custom" data-fragment-index="0">
+              <span>A narrow yes</span>
+              <strong><code>SameSite=Strict</code> can be the primary defense when</strong>
+              <ul>
+                <li>GET never changes state</li>
+                <li>every sibling subdomain is trusted</li>
+                <li>older or embedded browsers are out of scope</li>
+                <li>the server still checks Origin as a fallback</li>
+              </ul>
+            </article>
+
+            <article class="samesite-story fragment custom" data-fragment-index="1">
+              <div class="samesite-origin-row">
+                <span>Different origins</span>
+                <code>campaigns.banana.com</code>
+                <i>≠</i>
+                <code>auth.banana.com</code>
+              </div>
+              <div class="samesite-site-row">
+                <span>Same site</span>
+                <code>banana.com</code>
+                <i>=</i>
+                <code>banana.com</code>
+              </div>
+              <strong class="fragment custom" data-fragment-index="2">The cookie may be sent. SameSite does not stop our attack.</strong>
+            </article>
+          </div>
+
+          <aside class="notes">
+            SameSite can be a reasonable primary CSRF defense in a narrow modern deployment. Strict is the clearest
+            case. You must trust every sibling subdomain, keep all GET handlers read-only, accept the browser coverage,
+            and preferably verify Origin as a fallback. It does not work for this story. Campaigns and auth have
+            different origins, but they share the banana.com site, so SameSite treats the request as same-site.
+            Source: https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
+          </aside>
+        </section>
+
+        <section class="lesson-slide cors-defense-slide" data-background-color="#07101f">
+          <header class="lesson-heading">
+            <h2>When can CORS defend this API?</h2>
+          </header>
+
+          <div class="plain-reveal-list cors-defense-list">
+            <div class="fragment custom" data-fragment-index="0"><span>01</span><strong>Check <code>Origin</code> against exact trusted origins.</strong></div>
+            <div class="fragment custom" data-fragment-index="1"><span>02</span><strong>Require JSON or an application-only header on mutations.</strong></div>
+            <div class="fragment custom" data-fragment-index="2"><span>03</span><strong>Reject form, text, and state-changing <code>GET</code> alternatives.</strong></div>
+            <div class="fragment custom" data-fragment-index="3"><span>04</span><strong><code>PATCH</code> + JSON already causes a browser preflight.</strong></div>
+            <div class="cors-recap-failure fragment custom" data-fragment-index="4"><span>05</span><strong>None of this mattered here. The code explicitly allowed <code>campaigns.banana.com</code>.</strong></div>
+          </div>
+
+          <aside class="notes">
+            This is the recap. “Make every mutation preflight” is shorthand and slightly misleading. Same-origin
+            requests never need CORS preflight. Accept only non-simple mutation shapes, such as JSON or a required
+            custom header, and reject simple form or text alternatives. A cross-origin browser then has to preflight
+            automatically. This demo already uses PATCH and JSON, so no client change is required. In the incident,
+            the browser performed every step correctly. The server explicitly approved the hostile campaign origin.
+          </aside>
+        </section>
+
+        <section class="scene-slide aws-bill-slide" data-background-color="#07101f">
+          <div class="scene-label">September 2026 · AWS bill</div>
+
+          <div class="browser-window aws-browser-window">
+            <div class="browser-chrome">
+              <div class="window-controls" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="address-bar"><img class="lock" src="/assets/lock.svg" alt="" />console.aws.amazon.com/billing/home#/bills</div>
+            </div>
+
+            <div class="aws-console">
+              <header class="aws-header"><span class="aws-logo">aws</span><strong>Billing and Cost Management</strong><span class="aws-profile"><span class="banana-mark aws-profile-mark"><img src="/assets/banana-silhouette.svg" alt="" /></span><span>Banana Technologies</span></span></header>
+              <div class="aws-content">
+                <div class="aws-breadcrumb">Bills › September 2026</div>
+                <div class="aws-total-row">
+                  <div><small>September 2026 charges</small><strong>$184,392.77</strong><span>USD · month to date</span></div>
+                  <div class="aws-change">↑ 4,812% from August</div>
+                </div>
+                <div class="aws-table">
+                  <div class="aws-table-head"><span>Service</span><span>Usage</span><span>Amount</span></div>
+                  <div class="aws-line aws-gpu-line"><span><b>EC2 P5 GPU instances</b><small>us-east-1 · p5.48xlarge</small></span><span>1,126.4 hours</span><strong>$176,840.12</strong></div>
+                  <div class="aws-line"><span><b>Amazon S3</b><small>Storage and requests</small></span><span>24.8 TB</span><strong>$4,918.31</strong></div>
+                  <div class="aws-line"><span><b>Data transfer</b><small>Regional and internet</small></span><span>18.2 TB</span><strong>$2,634.34</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="notes">
+            Start with the consequence, then trace backward. This invoice is fictional. It gives the stolen cloud
+            credential a visible consequence: an attacker used Banana's AWS access to run expensive GPU instances.
+            The exact outcome could instead be data theft, deletion, ransomware, or lateral movement.
+          </aside>
+        </section>
+
+        <section class="scene-slide ci-browser-slide" data-background-color="#07101f">
+          <div class="scene-label">August 18, 2026 · CI · banana-web · build #4812</div>
+
+          <div class="browser-window ci-browser-window">
+            <div class="browser-chrome">
+              <div class="window-controls" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="address-bar"><img class="lock" src="/assets/lock.svg" alt="" />ci.banana.com/builds/4812</div>
+            </div>
+
+            <div class="ci-web-app">
+              <header class="ci-web-header">
+                <div class="ci-repo"><span class="banana-mark ci-repo-mark"><img src="/assets/banana-silhouette.svg" alt="" /></span><span><strong>banana-web</strong><small>main · 8f34c2a</small></span></div>
+                <span class="ci-web-success">✓ Build passed</span>
+              </header>
+
+              <div class="ci-web-body">
+                <aside class="ci-job-list">
+                  <span class="active">✓ build</span>
+                  <span>✓ test</span>
+                  <span>✓ deploy</span>
+                </aside>
+                <main class="ci-web-log">
+                  <div><span>10:42:11</span><code>npm install</code></div>
+                  <div><span>10:42:17</span><code>added 611 packages in 6s</code></div>
+                  <div class="ci-log-resolve"><span>10:42:17</span><code>archive-helper@3.2.3</code></div>
+                  <div><span>10:42:19</span><code>found 0 vulnerabilities</code></div>
+                  <div><span>10:42:31</span><code>✓ 186 tests passed</code></div>
+                  <div><span>10:42:38</span><code>✓ production bundle created</code></div>
+                  <div><span>10:43:02</span><code>✓ deployed to production</code></div>
+                </main>
+              </div>
+            </div>
+          </div>
+
+          <span class="ci-log-flash fragment custom" data-fragment-index="0" aria-hidden="true"></span>
+
+          <aside class="notes">
+            Now trace backward to the August build. Nothing looked wrong. The dependency installed, npm knew of no
+            advisory, tests passed, and the deployment succeeded. On the click, flash the dependency that ran during
+            install. A green build proves the build completed, not that every program it executed was trustworthy.
+          </aside>
+        </section>
+
+        <section class="lesson-slide shai-hulud-slide" data-background-color="#07101f">
+          <header class="lesson-heading">
+            <h2>Supply-chain attack</h2>
+          </header>
+
+          <div class="shai-layout fragment custom" data-fragment-index="0">
+            <figure class="shai-image">
+              <img src="/assets/shai-hulud-wiz.png" alt="Wiz threat update graphic for the Shai-Hulud npm supply-chain worm" />
+              <figcaption>Image: Wiz Research, September 2025</figcaption>
+            </figure>
+            <div class="shai-flow">
+              <div class="fragment custom" data-fragment-index="1"><span>01</span><strong>Install a trusted package</strong></div>
+              <div class="fragment custom" data-fragment-index="2"><span>02</span><strong>Steal npm, GitHub, and cloud credentials</strong></div>
+              <div class="fragment custom" data-fragment-index="3"><span>03</span><strong>Publish infected versions of more packages</strong></div>
+            </div>
+          </div>
+
+          <aside class="notes">
+            This is the actual hero image from Wiz Research's September 2025 Shai-Hulud report. The real worm ran
+            from malicious npm package versions, harvested GitHub, npm, AWS, GCP, and Azure credentials, then used
+            stolen npm tokens to infect more packages. Source:
+            https://www.wiz.io/blog/shai-hulud-npm-supply-chain-attack
+          </aside>
+        </section>
+
+        <section class="lesson-slide compact-code-lesson dependency-rework-slide" data-background-color="#07101f">
+          <header class="lesson-heading">
+            <h2>A thing that made it worse.</h2>
+          </header>
+
+          <div class="code-stage dependency-code-stage">
+            <article class="code-stage-frame fragment current-visible" data-fragment-index="0">
+              <div class="code-panel-bar"><span>.gitignore + CI</span><span>no reviewed resolution</span></div>
+              <pre><code><span class="code-muted"># .gitignore</span>
+package-lock.json
+
+<span class="code-muted"># CI</span>
+npm install
+
+<span class="code-muted"># package.json</span>
+<span class="syntax-string">"archive-helper"</span>: <span class="syntax-string">"^3.2.0"</span></code></pre>
+            </article>
+
+            <article class="code-stage-frame dependency-version-frame fragment current-visible" data-fragment-index="1">
+              <div class="code-panel-bar"><span>“Vulnerabilities auto-upgrade”</span><span>it worked once</span></div>
+              <div class="dependency-version-story">
+                <div><code>3.2.1</code><span class="version-danger">vulnerable</span></div>
+                <i>npm install →</i>
+                <div><code>3.2.2</code><span class="version-safe">fixed</span></div>
+                <i>next build →</i>
+                <div><code>3.2.3</code><span class="version-danger">compromised</span></div>
+              </div>
+            </article>
+
+            <article class="code-stage-frame code-stage-safe fragment current-visible" data-fragment-index="2">
+              <div class="code-panel-bar"><span>CI</span><span>install the reviewed dependency tree</span></div>
+              <pre><code><span class="code-safe">package-lock.json committed</span>
+
+npm ci
+
+archive-helper@<span class="code-safe">3.2.2</span>
+
+<span class="code-muted"># updates now arrive as reviewable lockfile changes</span></code></pre>
+            </article>
+          </div>
+
+          <aside class="notes">
+            The floating install strategy really did skip 3.2.1 once 3.2.2 appeared. The same strategy later took
+            3.2.3 without review. Commit the lockfile and use npm ci so CI installs the exact reviewed tree. This
+            controls dependency drift. It does not make the frozen versions permanently safe.
+          </aside>
+        </section>
+
+        <section class="lesson-slide audit-rework-slide" data-background-color="#07101f">
+          <header class="lesson-heading">
+            <h2>npm audit</h2>
+          </header>
+
+          <div class="audit-story plain-reveal-list">
+            <div class="fragment custom" data-fragment-index="0"><span>Monday</span><strong>3.2.1 deployed. No known vulnerability.</strong></div>
+            <div class="fragment custom" data-fragment-index="1"><span>Thursday</span><strong>An advisory names 3.2.1 and points to 3.2.2.</strong></div>
+            <div class="fragment custom" data-fragment-index="2"><span>Friday</span><strong><code>npm audit</code> opens the remediation work.</strong></div>
+            <p class="fragment custom" data-fragment-index="3">The software did not change. What we know did.</p>
+          </div>
+
+          <aside class="notes">
+            Do not make npm audit part of the deployment gate story. Advisories often appear after an artifact is
+            already running. Run dependency monitoring on a schedule against the exact lockfile you shipped, notify
+            an owner, review the update, and redeploy. npm audit detects known advisories, not every malicious publish.
+          </aside>
+        </section>
+
+        <section class="chain-slide" data-background-color="#07101f" data-visibility="hidden">
+          <div class="chain-heading">
+            <p class="eyebrow">Reconstructing the breach</p>
+            <h2>How did this happen?</h2>
+          </div>
+
+          <div class="payload-sequence" aria-label="How the attack payload changes at each layer">
+            <div class="payload-snapshot fragment current-visible" data-fragment-index="0">
+              <span class="payload-label">Incoming metadata request</span>
+              <pre><code><span class="code-method">PATCH</span> /api/tickets/{ticketId}/metadata
+{
+  <span class="code-key">"field"</span>: <span class="code-string">"priority = priority, markdown"</span>,
+  <span class="code-key">"value"</span>: <span class="code-string">"&lt;img src=x onerror=\"fetch('/api/sub-system/change-metadata', { method: 'PATCH', body: JSON.stringify({ role: 'admin', subSystem: 'auth.banana.com/api/users/{attackerId}' }) })\"&gt;"</span>
+}</code></pre>
+            </div>
+
+            <div class="payload-snapshot fragment current-visible" data-fragment-index="1">
+              <span class="payload-label">Stored as ticket content</span>
+              <pre><code><span class="code-key">markdown</span> = <span class="code-string">&lt;img src=x onerror="fetch(
+  '/api/sub-system/change-metadata',
+  { method: 'PATCH', body: JSON.stringify({ role: 'admin', subSystem: 'auth.banana.com/api/users/{attackerId}' }) })
+)"&gt;</span></code></pre>
+            </div>
+
+            <div class="payload-snapshot fragment current-visible" data-fragment-index="2">
+              <span class="payload-label">Sent by Maya's browser</span>
+              <pre><code><span class="code-method">PATCH</span> /api/sub-system/change-metadata
+{ <span class="code-key">role</span>: <span class="code-string">"admin"</span>, <span class="code-key">subSystem</span>: <span class="code-string">"auth.banana.com/api/users/{attackerId}"</span> }</code></pre>
+            </div>
+
+            <div class="payload-snapshot fragment current-visible" data-fragment-index="3">
+              <span class="payload-label">Forwarded with borrowed authority</span>
+              <pre><code><span class="code-method">PATCH</span> https://auth.banana.com/api/users/{attackerId}
+<span class="code-key">Authorization</span>: Bearer &lt;support-service&gt;    { <span class="code-key">role</span>: <span class="code-string">"admin"</span> }</code></pre>
+            </div>
+
+            <div class="payload-snapshot fragment current-visible" data-fragment-index="4">
+              <span class="payload-label">Auth service result</span>
+              <pre><code>users/<span class="code-variable">{attackerId}</span>.<span class="code-key">role</span> = <span class="code-string">"admin"</span></code></pre>
+            </div>
+          </div>
+
+          <div class="attack-chain" aria-label="Injection to administrator access attack chain">
+            <article class="chain-node injection-node fragment custom" data-fragment-index="0">
+              <span class="chain-step">01</span>
+              <small>Input becomes query</small>
+              <h3>Injection</h3>
+              <code>field → SQL identifier</code>
+              <p>An unsafe field name redirects the update into markdown.</p>
+            </article>
+
+            <div class="chain-link fragment custom" data-fragment-index="1" aria-hidden="true"></div>
+
+            <article class="chain-node xss-node fragment custom" data-fragment-index="1">
+              <span class="chain-step">02</span>
+              <small>Content becomes code</small>
+              <h3>Stored XSS</h3>
+              <code>markdown → DOM</code>
+              <p>The content executes when Maya opens the ticket.</p>
+            </article>
+
+            <div class="chain-link fragment custom" data-fragment-index="2" aria-hidden="true"></div>
+
+            <article class="chain-node ssrf-node fragment custom" data-fragment-index="2">
+              <span class="chain-step">03</span>
+              <small>Data becomes destination</small>
+              <h3>SSRF</h3>
+              <code>subSystem → destination</code>
+              <p>The backend follows an attacker-chosen service URL.</p>
+            </article>
+
+            <div class="chain-link fragment custom" data-fragment-index="3" aria-hidden="true"></div>
+
+            <article class="chain-node auth-node fragment custom" data-fragment-index="3">
+              <span class="chain-step">04</span>
+              <small>Identity becomes permission</small>
+              <h3>Auth service</h3>
+              <code>service identity → authority</code>
+              <p>The request arrives with authority the attacker never had.</p>
+            </article>
+
+            <div class="chain-link fragment custom" data-fragment-index="4" aria-hidden="true"></div>
+
+            <article class="chain-node access-node fragment custom" data-fragment-index="4">
+              <span class="chain-step">05</span>
+              <small>Permission becomes control</small>
+              <h3>Admin access</h3>
+              <code>role → admin</code>
+              <p>The attacker can now use a real administrator account.</p>
+            </article>
+          </div>
+
+          <aside class="notes">
+            Start with the question alone. Reveal one step at a time: injection, stored XSS, SSRF,
+            the trusted auth-service request, and finally administrator access. These are not five
+            independent bugs. Each one supplies the capability required by the next.
+          </aside>
+        </section>
+
+        <section class="lesson-slide injection-lesson" data-background-color="#07101f" data-visibility="hidden">
+          <header class="lesson-heading">
+            <p class="eyebrow">Step 01 · The honest mistake</p>
+            <h2>Injection</h2>
+            <p>Would this survive code review?</p>
+          </header>
+
+          <div class="injection-layout">
+            <div class="code-panel">
+              <div class="code-panel-bar">
+                <span>ticket-metadata.ts</span>
+                <span>TypeScript</span>
+              </div>
+              <pre><code><span class="syntax-keyword">const</span> { field, value } = req.body;
+
+<span class="syntax-keyword">await</span> db.query(sql<span class="syntax-punctuation">`</span>
+  <span class="syntax-sql">UPDATE</span> tickets
+  <span class="syntax-sql">SET</span> <span class="raw-sql-target fragment custom" data-fragment-index="0">${makeSql(field)}</span> = ${value}
+  <span class="syntax-sql">WHERE</span> id = ${id}
+<span class="syntax-punctuation">`</span>);</code></pre>
+            </div>
+
+            <div class="injection-explainer">
+              <div class="explain-card explain-prompt fragment fade-out" data-fragment-index="0">
+                <span class="explain-index">Before the reveal</span>
+                <h3>Everything looks parameterized.</h3>
+                <p>The tagged template handles <code>value</code> and <code>id</code>. The helper name sounds safe.</p>
+              </div>
+
+              <div class="explain-card fragment current-visible" data-fragment-index="0">
+                <span class="explain-index">The escape hatch</span>
+                <h3><code>makeSql()</code> emits raw SQL.</h3>
+                <p>It does not prove that <code>field</code> is an allowed column name.</p>
+              </div>
+
+              <div class="explain-card fragment current-visible" data-fragment-index="1">
+                <span class="explain-index">Attacker-controlled field</span>
+                <pre><code>priority = priority, markdown</code></pre>
+                <p>The first assignment changes nothing. The comma starts a second assignment.</p>
+              </div>
+
+              <div class="explain-card fragment current-visible" data-fragment-index="2">
+                <span class="explain-index">SQL sent to the database</span>
+                <pre><code><span class="syntax-sql">UPDATE</span> tickets
+<span class="syntax-sql">SET</span> priority = priority, markdown = $1
+<span class="syntax-sql">WHERE</span> id = $2</code></pre>
+                <p><code>$1</code> is still parameterized. It is simply bound to the wrong column.</p>
+              </div>
+
+              <div class="explain-card explain-result fragment current-visible" data-fragment-index="3">
+                <span class="explain-index">Result</span>
+                <h3><code>ticket.markdown = value</code></h3>
+                <p>The database did exactly what the generated query requested.</p>
+              </div>
+            </div>
+          </div>
+
+          <aside class="notes">
+            Let the code sit for a moment and ask whether it looks injectable. The values are safely
+            parameterized. The mistake is treating an attacker-controlled identifier as trusted SQL.
+            Reveal the field value, then the generated query. The parameter protection still works;
+            the attacker has changed which column receives that parameter.
+          </aside>
+        </section>
+
+        <section class="lesson-slide xss-lesson" data-background-color="#07101f" data-visibility="hidden">
+          <header class="lesson-heading">
+            <p class="eyebrow">Step 02 · Stored XSS</p>
+            <h2>Validated on the way in.</h2>
+            <p>Trusted on the way out.</p>
+          </header>
+
+          <div class="xss-layout">
+            <div class="write-path-panel">
+              <p class="panel-label">The expected write path</p>
+              <div class="write-path expected-path">
+                <code>POST /tickets/:id/markdown</code>
+                <span class="path-arrow">→</span>
+                <span class="path-check">validateMarkdown()</span>
+                <span class="path-arrow">→</span>
+                <span class="database-chip">tickets.markdown</span>
+              </div>
+
+              <div class="bypass-path fragment custom" data-fragment-index="0">
+                <p class="panel-label">The path the payload took</p>
+                <div class="write-path dangerous-path">
+                  <code>PATCH /tickets/:id/metadata</code>
+                  <span class="path-arrow">→</span>
+                  <span class="path-danger">Injection</span>
+                  <span class="path-arrow">→</span>
+                  <span class="database-chip">tickets.markdown</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="render-panel">
+              <div class="code-panel-bar">
+                <span>TicketBody.tsx</span>
+                <span>React</span>
+              </div>
+              <pre><code><span class="syntax-keyword">const</span> html = marked.parse(ticket.markdown);
+
+<span class="syntax-keyword">return</span> (
+  &lt;article
+    <span class="render-sink fragment custom" data-fragment-index="1">dangerouslySetInnerHTML={{ __html: html }}</span>
+  /&gt;
+);</code></pre>
+              <div class="sink-warning fragment fade-in" data-fragment-index="1">
+                Stored data is not automatically trusted data.
+              </div>
+            </div>
+
+            <div class="xss-consequence fragment custom" data-fragment-index="2">
+              <span class="consequence-label">Rendered in Maya’s <strong>authenticated</strong> browser</span>
+              <div class="consequence-flow">
+                <code>img.onerror</code>
+                <span class="path-arrow">→</span>
+                <code class="fetch-chip">fetch()</code>
+                <span class="path-arrow">→</span>
+                <strong>JavaScript runs as support.banana.com</strong>
+              </div>
+            </div>
+          </div>
+
+          <aside class="notes">
+            The application does have server-side validation, but only on the normal markdown POST.
+            Injection wrote to the same column through the metadata route. The renderer assumes that
+            database content has already been made safe, so the stored payload executes for Maya.
+          </aside>
+        </section>
+
+        <section class="lesson-slide ssrf-lesson" data-background-color="#07101f" data-visibility="hidden">
+          <header class="lesson-heading">
+            <p class="eyebrow">Step 03 · SSRF</p>
+            <h2>A valid URL is not an allowed URL.</h2>
+            <p>The destination came from the request. The credentials came from the server.</p>
+          </header>
+
+          <div class="ssrf-layout">
+            <div class="code-panel ssrf-code-panel">
+              <div class="code-panel-bar">
+                <span>change-metadata.ts</span>
+                <span>TypeScript</span>
+              </div>
+              <pre><code><span class="syntax-keyword">const</span> { role, subSystem } = req.body;
+
+<span class="syntax-keyword">const</span> target = makeUrl(
+  <span class="syntax-string">`https://</span><span class="url-target fragment custom" data-fragment-index="0">${subSystem}</span><span class="syntax-string">`</span>,
+);
+
+<span class="syntax-keyword">await</span> serviceClient.patch(target, { role });</code></pre>
+              <div class="credential-note">serviceClient automatically authenticates as support-service</div>
+            </div>
+
+            <div class="ssrf-explainer">
+              <div class="explain-card explain-prompt fragment fade-out" data-fragment-index="0">
+                <span class="explain-index">The assumption</span>
+                <h3><code>subSystem</code> names one of our services.</h3>
+                <p><code>makeUrl()</code> proves that the string is a URL. It does not prove that the service is allowed.</p>
+              </div>
+
+              <div class="explain-card fragment current-visible" data-fragment-index="0">
+                <span class="explain-index">Attacker-controlled destination</span>
+                <pre><code>auth.banana.com/api/users/{attackerId}</code></pre>
+                <p>The hostname and path both survive validation.</p>
+              </div>
+
+              <div class="explain-card fragment current-visible" data-fragment-index="1">
+                <span class="explain-index">Request sent by the backend</span>
+                <pre><code><span class="syntax-sql">PATCH</span> https://auth.banana.com/api/users/{attackerId}
+Authorization: Bearer &lt;support-service&gt;
+{ role: "admin" }</code></pre>
+                <p>The server lends the request network access and its own identity.</p>
+              </div>
+
+              <div class="explain-card ssrf-fix fragment current-visible" data-fragment-index="2">
+                <span class="explain-index">Fix: server-owned destinations</span>
+                <pre><code><span class="syntax-keyword">const</span> hosts = {
+  crm: <span class="syntax-string">"https://crm.banana.com"</span>,
+  billing: <span class="syntax-string">"https://billing.banana.com"</span>,
+};
+
+<span class="syntax-keyword">const</span> baseUrl = hosts[subSystem];
+<span class="syntax-keyword">if</span> (!baseUrl) <span class="syntax-keyword">throw</span> InvalidSubSystem;</code></pre>
+                <p>The request chooses a small identifier. The server chooses the URL.</p>
+              </div>
+            </div>
+          </div>
+
+          <aside class="notes">
+            URL parsing is not authorization. The attacker controls the hostname and path, while the
+            service client contributes network reachability and a trusted identity. The fix is a strict
+            mapping from a small region identifier to server-owned destinations.
+          </aside>
+        </section>
+
+        <section class="defense-slide" data-background-color="#07101f" data-visibility="hidden">
+          <header class="defense-heading">
+            <p class="eyebrow">Defense in depth</p>
+            <h2>Break the chain anywhere.</h2>
+            <p>Any one of these checks would have contained the incident.</p>
+          </header>
+
+          <div class="defense-flow" aria-label="Attack chain with independent defensive controls">
+            <div class="defense-node"><span>01</span><strong>Injection</strong></div>
+            <div class="defense-arrow">→</div>
+            <div class="defense-node"><span>02</span><strong>Stored XSS</strong></div>
+            <div class="defense-arrow">→</div>
+            <div class="defense-node"><span>03</span><strong>SSRF</strong></div>
+            <div class="defense-arrow">→</div>
+            <div class="defense-node"><span>04</span><strong>Weak authorization</strong></div>
+            <div class="defense-arrow">→</div>
+            <div class="defense-node defense-impact">
+              <span>05</span>
+              <strong>Admin access</strong>
+              <em class="blocked-stamp fragment custom" data-fragment-index="4">Blocked</em>
+            </div>
+          </div>
+
+          <div class="defense-options">
+            <article class="defense-option fragment custom" data-fragment-index="0">
+              <span>Stop 01</span>
+              <strong>Allowlist column identifiers</strong>
+            </article>
+            <article class="defense-option fragment custom" data-fragment-index="1">
+              <span>Stop 02</span>
+              <strong>Sanitize rendered HTML</strong>
+            </article>
+            <article class="defense-option fragment custom" data-fragment-index="2">
+              <span>Stop 03</span>
+              <strong>Allowlist service destinations</strong>
+            </article>
+            <article class="defense-option fragment custom" data-fragment-index="3">
+              <span>Stop 04</span>
+              <strong>Authorize the role change</strong>
+            </article>
+          </div>
+
+          <div class="defense-takeaway fragment custom" data-fragment-index="4">
+            One bug should not be enough.
+          </div>
+
+          <aside class="notes">
+            Each defense stands on its own. An identifier allowlist prevents the write. Safe rendering
+            prevents code execution. A destination allowlist prevents the internal request. Operation-level
+            authorization prevents the role change. Defense in depth turns a bug into a contained bug.
+          </aside>
+        </section>
+
+        <section class="lesson-slide csrf-lesson" data-background-color="#07101f" data-visibility="hidden">
+          <header class="lesson-heading">
+            <p class="eyebrow">Second incident · CSRF</p>
+            <h2>CSRF borrows the browser.</h2>
+            <p>The session proves who sent the request, not who intended it.</p>
+          </header>
+
+          <div class="csrf-layout">
+            <div class="code-panel csrf-code-panel">
+              <div class="code-panel-bar">
+                <span>campaigns.banana.com/free-coffee.js</span>
+                <span>Contractor-managed script</span>
+              </div>
+              <pre><code><span class="syntax-keyword">await</span> fetch(
+  <span class="syntax-string">"https://auth.banana.com/api/users/{attackerId}"</span>,
+  {
+    method: <span class="syntax-string">"PATCH"</span>,
+    credentials: <span class="syntax-string">"include"</span>,
+    headers: { <span class="syntax-string">"Content-Type"</span>: <span class="syntax-string">"application/json"</span> },
+    body: JSON.stringify({ role: <span class="syntax-string">"admin"</span> }),
+  },
+);</code></pre>
+            </div>
+
+            <div class="csrf-explainer">
+              <div class="explain-card explain-prompt fragment fade-out" data-fragment-index="0">
+                <span class="explain-index">The setup</span>
+                <h3>A contractor can publish campaign pages.</h3>
+                <p>A compromised contractor account controls this script, but has no access to the auth service.</p>
+              </div>
+
+              <div class="explain-card fragment current-visible" data-fragment-index="0">
+                <span class="explain-index">The broad CORS rule</span>
+                <pre><code><span class="syntax-keyword">if</span> (origin.endsWith(<span class="syntax-string">".banana.com"</span>)) {
+  allowOrigin(origin, { credentials: <span class="syntax-keyword">true</span> });
+}</code></pre>
+                <p>It was meant to admit first-party frontends. It also admits attacker-controlled pages.</p>
+              </div>
+
+              <div class="explain-card fragment current-visible" data-fragment-index="1">
+                <span class="explain-index">The preflight succeeds</span>
+                <pre><code>Origin: https://campaigns.banana.com
+Access-Control-Allow-Origin: https://campaigns.banana.com
+Access-Control-Allow-Credentials: true</code></pre>
+                <p>The browser is now allowed to send the credentialed <code>PATCH</code>.</p>
+              </div>
+
+              <div class="explain-card fragment current-visible" data-fragment-index="2">
+                <span class="explain-index">The authenticated mutation</span>
+                <pre><code><span class="syntax-sql">PATCH</span> /api/users/{attackerId}
+Cookie: session=&lt;maya&gt;
+{ role: "admin" }</code></pre>
+                <p>The endpoint recognizes Maya. It has no proof that Maya intended this request.</p>
+              </div>
+            </div>
+          </div>
+
+          <aside class="notes">
+            The modern fetch uses JSON and PATCH, so the browser correctly preflights it. The auth service
+            allows credentialed requests from any banana.com subdomain because several frontends use the API.
+            A marketing contractor is legitimately allowed to publish campaign content, but cannot access
+            the auth service. Once that contractor account or pipeline is compromised, the suffix-based CORS
+            policy accidentally promotes limited publishing access into a trusted auth origin. The browser
+            approves the preflight, includes Maya's same-site session cookie, and sends the mutation.
+          </aside>
+        </section>
+
+        <section class="lesson-slide csrf-decision-slide" data-background-color="#07101f" data-visibility="hidden">
+          <header class="lesson-heading">
+            <p class="eyebrow">Choosing the defense</p>
+            <h2>To CSRF token or not CSRF token?</h2>
+            <p>A token proves the application constructed the request, not merely the browser.</p>
+          </header>
+
+          <div class="csrf-decision-grid">
+            <article class="csrf-decision-card csrf-token-role fragment custom" data-fragment-index="0">
+              <span class="decision-answer">What the token adds</span>
+              <h3>Proof that is not ambient</h3>
+              <div class="decision-proof">
+                <div><code>Cookie</code><span>attached automatically</span></div>
+                <div><code>X-CSRF-Token</code><span>supplied by the application</span></div>
+              </div>
+              <p>A hostile origin can cause the first. It cannot supply the second.</p>
+            </article>
+
+            <article class="csrf-decision-card csrf-origin-only fragment custom" data-fragment-index="1">
+              <span class="decision-answer">Tokenless option 01</span>
+              <h3>Verify the request origin</h3>
+              <ul class="origin-checklist">
+                <li>Exact-match trusted origins</li>
+                <li><code>Referer</code> fallback</li>
+                <li>Reject missing or <code>null</code></li>
+                <li>Check every unsafe method</li>
+              </ul>
+            </article>
+
+            <article class="csrf-decision-card csrf-cors-only fragment custom" data-fragment-index="2">
+              <span class="decision-answer">Tokenless option 02</span>
+              <h3>Make every mutation preflight</h3>
+              <ul class="origin-checklist">
+                <li>Exact credentialed CORS allowlist</li>
+                <li>Require JSON or a custom header</li>
+                <li>Reject simple request formats</li>
+                <li>No state-changing <code>GET</code></li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="csrf-decision-takeaway fragment custom" data-fragment-index="3">
+            Every cookie-authenticated mutation needs a CSRF defense. Not necessarily a token.
+          </div>
+
+          <aside class="notes">
+            The token is one way to prove that the request was constructed by the application. Every
+            cookie-authenticated state change needs some CSRF defense, but the defense does not have to be
+            a token. Strict server-side Origin and Referer verification can be sufficient if it fails closed.
+            An exact credentialed CORS allowlist can also be sufficient for an API when every accepted
+            mutation requires preflight, for example through JSON or a required custom header, and the API
+            rejects all simple request shapes. The broad banana.com suffix rule meets neither standard.
+          </aside>
+        </section>
+
+        <section class="lesson-slide dependency-log-slide" data-background-color="#07101f" data-visibility="hidden">
+          <header class="lesson-heading">
+            <p class="eyebrow">Third incident · Dependencies</p>
+            <h2>Green build. Compromised artifact.</h2>
+            <p>A compatible patch entered CI without review.</p>
+          </header>
+
+          <div class="dependency-log-layout">
+            <div class="code-panel ci-log-panel">
+              <div class="code-panel-bar">
+                <span>banana-web · build #4812</span>
+                <span class="ci-success-label">Job succeeded</span>
+              </div>
+              <pre><code><span class="ci-muted">Run</span> npm install
+
+added 611 packages, and audited 612 packages in 8s
+
+<span class="ci-success">found 0 vulnerabilities</span>
+
+<span class="ci-muted">Run</span> npm test
+<span class="ci-success">✓ 186 tests passed</span>
+
+<span class="ci-muted">Run</span> npm run build
+<span class="ci-success">✓ production bundle created</span></code></pre>
+            </div>
+
+            <div class="dependency-context">
+              <article class="dependency-file-card">
+                <span>.gitignore</span>
+                <code>package-lock.json</code>
+                <strong>Ignored</strong>
+              </article>
+              <article class="dependency-file-card">
+                <span>package.json</span>
+                <code>"archive-helper": "^3.2.0"</code>
+                <strong class="dependency-compromised">Resolved as 3.2.3 · compromised publish</strong>
+              </article>
+            </div>
+          </div>
+
+          <aside class="notes">
+            The lockfile was intentionally gitignored, so the compatible range is resolved again in every
+            clean CI environment. This build receives the compromised archive-helper 3.2.3 release. npm reports
+            zero known vulnerabilities because the malicious publish has no advisory yet. Tests and bundling
+            still pass, so the compromised dependency enters the deployed artifact.
+          </aside>
+        </section>
+
+        <section class="lesson-slide dependency-ci-slide" data-background-color="#07101f" data-visibility="hidden">
+          <header class="lesson-heading">
+            <p class="eyebrow">Supply-chain control</p>
+            <h2><code>npm install</code> is not a security strategy.</h2>
+            <p>Automatically receiving a patch means automatically trusting a new release.</p>
+          </header>
+
+          <div class="dependency-compare-grid">
+            <article class="dependency-compare-card dependency-floating fragment custom" data-fragment-index="0">
+              <span class="dependency-command">npm install</span>
+              <h3>No committed lockfile</h3>
+              <div class="dependency-resolution">
+                <code>^3.2.0</code>
+                <span class="path-arrow">→</span>
+                <strong>latest compatible version</strong>
+              </div>
+              <div class="dependency-outcomes">
+                <span class="outcome-safe"><b>3.2.2</b> skips the known vulnerability</span>
+                <span class="outcome-danger"><b>3.2.3</b> installs the supply-chain attack</span>
+              </div>
+            </article>
+
+            <article class="dependency-compare-card dependency-frozen fragment custom" data-fragment-index="1">
+              <span class="dependency-command">The fix · npm ci</span>
+              <h3>Committed lockfile</h3>
+              <div class="dependency-resolution">
+                <code>package-lock.json</code>
+                <span class="path-arrow">→</span>
+                <strong>reviewed 3.2.2</strong>
+              </div>
+              <div class="dependency-outcomes">
+                <span><b>Repeatable</b> across developer and CI machines</span>
+                <span><b>Explicit updates</b> arrive as lockfile changes</span>
+              </div>
+            </article>
+          </div>
+
+          <div class="dependency-takeaway fragment custom" data-fragment-index="2">
+            Install reviewed versions. Audit them continuously.
+          </div>
+
+          <aside class="notes">
+            With no lockfile, npm install resolves the range again. A later build may incidentally receive a
+            patched release, but the same mechanism also accepts an unreviewed or compromised patch release.
+            The fix is to commit the lockfile and use npm ci, so CI installs exactly what was reviewed. That
+            solves uncontrolled dependency drift. It does not remove the need to maintain the frozen tree as
+            new vulnerabilities are disclosed, which is the job of the separate auditing process on the next slide.
+          </aside>
+        </section>
+
+        <section class="lesson-slide dependency-audit-slide" data-background-color="#07101f" data-visibility="hidden">
+          <header class="lesson-heading">
+            <p class="eyebrow">Continuous dependency auditing</p>
+            <h2>Vulnerabilities arrive after deployment.</h2>
+            <p>Dependency auditing is a recurring security process, not a build event.</p>
+          </header>
+
+          <div class="dependency-audit-timeline">
+            <article class="audit-moment audit-deploy fragment custom" data-fragment-index="0">
+              <span>Monday · deploy</span>
+              <strong>archive-helper 3.2.1</strong>
+              <code>found 0 vulnerabilities</code>
+            </article>
+            <div class="audit-timeline-arrow fragment custom" data-fragment-index="1">→</div>
+            <article class="audit-moment audit-advisory fragment custom" data-fragment-index="1">
+              <span>Thursday · advisory</span>
+              <strong>3.2.1 is vulnerable</strong>
+              <code>fixed in 3.2.2</code>
+            </article>
+            <div class="audit-timeline-arrow fragment custom" data-fragment-index="2">→</div>
+            <article class="audit-moment audit-detected fragment custom" data-fragment-index="2">
+              <span>Scheduled audit</span>
+              <strong>Alert and remediation PR</strong>
+              <code>npm audit --package-lock-only</code>
+            </article>
+          </div>
+
+          <div class="dependency-audit-layout fragment custom" data-fragment-index="3">
+            <div class="audit-command-panel">
+              <span class="explain-index">Separate from delivery</span>
+              <pre><code>$ npm audit --package-lock-only
+
+<span class="ci-warning">archive-helper &lt;3.2.2 · high</span>
+Path traversal in archive extraction
+Fix available in 3.2.2</code></pre>
+            </div>
+
+            <article class="audit-explainer">
+              <span class="explain-index">The operating loop</span>
+              <div class="audit-step"><code>inventory</code><span>Record the exact shipped tree</span></div>
+              <div class="audit-step audit-step-failed"><code>monitor</code><span>Recheck when advisories change</span></div>
+              <div class="audit-step"><code>remediate</code><span>Review, update, and redeploy</span></div>
+            </article>
+          </div>
+
+          <aside class="notes">
+            The build was clean according to the information available on Monday. The advisory published on
+            Thursday changes the risk of the already-deployed artifact. A scheduled dependency-monitoring
+            process must therefore run independently of delivery, scan the exact shipped lockfile or inventory,
+            notify an owner, and create a reviewed remediation change. npm audit is the concrete scanner here.
+            It uses known advisories, so it still cannot identify every new malicious release.
+          </aside>
+        </section>
+
+        <section class="lesson-slide honorable-slide" data-background-color="#07101f">
+          <header class="lesson-heading">
+            <p class="eyebrow">Quickfire</p>
+            <h2>Honorable mentions.</h2>
+          </header>
+
+          <div class="honorable-grid">
+            <article class="honorable-card honorable-injection fragment custom" data-fragment-index="0">
+              <span class="honorable-number">01 · More interpreters</span>
+              <h3>Injection is bigger than SQL</h3>
+              <div class="honorable-examples"><code>Shell</code><code>Template</code><code>LDAP</code><code>Prompt</code></div>
+              <p>Different interpreter, same question: can data become instructions?</p>
+            </article>
+
+            <article class="honorable-card honorable-ddos fragment custom" data-fragment-index="1">
+              <span class="honorable-number">02 · Availability</span>
+              <h3>DDoS</h3>
+              <p class="honorable-subtitle">Often self-inflicted 😅</p>
+              <div class="honorable-examples"><code>Retry storms</code><code>Fan-out</code><code>Expensive endpoints</code></div>
+              <p>Your own systems can become the botnet.</p>
+            </article>
+
+            <article class="honorable-card honorable-crypto fragment custom" data-fragment-index="2">
+              <span class="honorable-number">03 · Cryptography</span>
+              <h3>Do not invent the primitive</h3>
+              <div class="honorable-examples"><code>Weak hashing</code><code>Nonce reuse</code><code>Home-grown crypto</code></div>
+              <p>Use reviewed libraries, managed keys, and designs with boring defaults.</p>
+            </article>
+
+            <article class="honorable-card honorable-access fragment custom" data-fragment-index="3">
+              <span class="honorable-number">04 · Authorization</span>
+              <h3>Broken access control</h3>
+              <div class="honorable-examples"><code>IDOR / BOLA</code><code>Role confusion</code><code>Tenant escape</code></div>
+              <p>Logged in does not mean allowed to perform this action on this object.</p>
+            </article>
+          </div>
+
+          <aside class="notes">
+            Injection is the broader interpreter problem: SQL is only one instance. OWASP's web category also
+            includes command, ORM, LDAP, and other interpreter injections; prompt injection is treated as a
+            related class in the LLM Top 10. Availability failures are frequently amplified by our own retry,
+            fan-out, and cost characteristics. Cryptography fails through primitive selection and key handling.
+            Broken access control includes both function-level permissions and object-level checks such as IDOR.
+          </aside>
+        </section>
+
+        <section class="lesson-slide proto-advisories-slide" data-background-color="#07101f">
+          <header class="lesson-heading">
+            <h2>Prototype pollution</h2>
+          </header>
+
+          <span class="advisory-pile-trigger fragment custom" data-fragment-index="0" aria-hidden="true"></span>
+
+          <div class="advisory-pile" aria-label="Published prototype pollution advisories">
+            <article class="advisory-card advisory-lodash">
+              <span>February 7, 2019 · High</span>
+              <strong>lodash</strong>
+              <code>CVE-2018-16487</code>
+              <p>Prototype pollution in <code>defaultsDeep</code>, <code>merge</code>, and <code>mergeWith</code></p>
+            </article>
+            <article class="advisory-card advisory-jquery">
+              <span>2019 · Published advisory</span>
+              <strong>jQuery</strong>
+              <code>CVE-2019-11358</code>
+              <p>Prototype pollution through recursive <code>jQuery.extend</code></p>
+            </article>
+            <article class="advisory-card advisory-dot-prop">
+              <span>2020 · Published advisory</span>
+              <strong>dot-prop</strong>
+              <code>CVE-2020-8116</code>
+              <p>Unsafe property paths reach an object's prototype</p>
+            </article>
+            <article class="advisory-card advisory-lodash-zip">
+              <span>2020 · High</span>
+              <strong>lodash</strong>
+              <code>CVE-2020-8203</code>
+              <p>Prototype pollution through <code>zipObjectDeep</code></p>
+            </article>
+            <article class="advisory-card advisory-immer">
+              <span>2021 · Published advisory</span>
+              <strong>immer</strong>
+              <code>CVE-2021-23436</code>
+              <p>Crafted patches modify prototype properties</p>
+            </article>
+            <article class="advisory-card advisory-minimist">
+              <span>March 18, 2022 · Critical</span>
+              <strong>minimist</strong>
+              <code>CVE-2021-44906</code>
+              <p>Prototype pollution while parsing command-line arguments</p>
+            </article>
+            <article class="advisory-card advisory-n8n">
+              <span>June 10, 2026 · Moderate</span>
+              <strong>n8n</strong>
+              <code>GHSA-2vff-hj5x-8gq7</code>
+              <p>Public webhook payload becomes confused-deputy execution</p>
+            </article>
+            <article class="advisory-card advisory-apostrophe">
+              <span>June 11, 2026 · Critical</span>
+              <strong>ApostropheCMS</strong>
+              <code>GHSA-6h5j-32cf-4253</code>
+              <p>Process-wide authorization bypass through <code>apos.util.set</code></p>
+            </article>
+            <article class="advisory-card advisory-hoek">
+              <span>2018 · Published advisory</span>
+              <strong>hoek</strong>
+              <code>CVE-2018-3728</code>
+              <p>Prototype pollution through recursive object merging</p>
+            </article>
+            <article class="advisory-card advisory-merge">
+              <span>2018 · Published advisory</span>
+              <strong>merge</strong>
+              <code>CVE-2018-16469</code>
+              <p>Recursive merge accepts attacker-controlled prototype keys</p>
+            </article>
+            <article class="advisory-card advisory-set-value">
+              <span>2019 · Published advisory</span>
+              <strong>set-value</strong>
+              <code>CVE-2019-10747</code>
+              <p>Crafted property paths modify an object's prototype</p>
+            </article>
+            <article class="advisory-card advisory-yargs-parser">
+              <span>2020 · Published advisory</span>
+              <strong>yargs-parser</strong>
+              <code>CVE-2020-7608</code>
+              <p>Command-line keys reach prototype properties</p>
+            </article>
+            <article class="advisory-card advisory-object-path">
+              <span>2020 · Published advisory</span>
+              <strong>object-path</strong>
+              <code>CVE-2020-15256</code>
+              <p>Inherited-property mode permits prototype pollution</p>
+            </article>
+            <article class="advisory-card advisory-json5">
+              <span>2022 · Published advisory</span>
+              <strong>JSON5</strong>
+              <code>CVE-2022-46175</code>
+              <p>Parsing a crafted key can pollute the object prototype</p>
+            </article>
+          </div>
+
+          <aside class="notes">
+            On the first click, let the published advisories pile up without further input. The volume shows that the
+            vulnerability class exists without claiming that every instance is readily exploitable. Sources:
+            https://github.com/advisories/GHSA-4xc9-xhrj-v574
+            https://nvd.nist.gov/vuln/detail/CVE-2019-11358
+            https://nvd.nist.gov/vuln/detail/CVE-2020-8116
+            https://nvd.nist.gov/vuln/detail/CVE-2020-8203
+            https://nvd.nist.gov/vuln/detail/CVE-2021-23436
+            https://github.com/advisories/GHSA-xvch-5gv4-984h
+            https://github.com/n8n-io/n8n/security/advisories/GHSA-2vff-hj5x-8gq7
+            https://github.com/apostrophecms/apostrophe/security/advisories/GHSA-6h5j-32cf-4253
+            https://nvd.nist.gov/vuln/detail/CVE-2018-3728
+            https://nvd.nist.gov/vuln/detail/CVE-2018-16469
+            https://nvd.nist.gov/vuln/detail/CVE-2019-10747
+            https://nvd.nist.gov/vuln/detail/CVE-2020-7608
+            https://nvd.nist.gov/vuln/detail/CVE-2020-15256
+            https://nvd.nist.gov/vuln/detail/CVE-2022-46175
+          </aside>
+        </section>
+
+        <section class="lesson-slide proto-lookup-found-slide" data-background-color="#07101f" data-auto-animate data-auto-animate-duration="0.65">
+          <header class="lesson-heading" data-id="proto-lookup-heading">
+            <h2>Property lookup starts on the object.</h2>
+          </header>
+
+          <div class="proto-stair-stage proto-found-stage">
+            <div class="proto-stair-query" data-id="proto-stair-query"><span>Read</span><code>user.isAdmin</code></div>
+
+            <svg class="proto-stair-arrows" data-id="proto-stair-arrows" viewBox="0 0 1400 470" aria-hidden="true">
+              <path class="proto-stair-path proto-query-path" data-id="proto-query-link" d="M 250 330 C 275 330, 300 330, 330 330"></path>
+              <path class="proto-stair-path proto-user-root-path" data-id="proto-user-root-link" d="M 630 275 C 700 275, 650 195, 730 195"></path>
+              <path class="proto-stair-path proto-root-null-path" data-id="proto-root-null-link" d="M 1080 170 C 1160 170, 1120 70, 1200 70"></path>
+            </svg>
+
+            <article class="proto-record proto-stair-user" data-id="proto-stair-user">
+              <strong>user</strong>
+              <div><span>name</span><code>"Maya"</code></div>
+              <div class="proto-found-field"><span>isAdmin</span><code>false</code></div>
+            </article>
+            <article class="proto-record proto-stair-root" data-id="proto-stair-root">
+              <strong>Object.prototype</strong>
+              <div><span>toString</span><code>[Function]</code></div>
+              <div><span>hasOwnProperty</span><code>[Function]</code></div>
+            </article>
+            <div class="proto-stair-null" data-id="proto-stair-null"><code>null</code><span>end of chain</span></div>
+
+            <span class="proto-stair-dot proto-found-dot" aria-hidden="true"></span>
+            <div class="proto-stair-status proto-found-status fragment custom" data-fragment-index="0">
+              <span>Found on <code>user</code>. Stop.</span><strong>false</strong>
+            </div>
+          </div>
+
+          <aside class="notes">
+            The dot begins at the expression user.isAdmin. JavaScript checks the user object first. On the click, the
+            dot lands on the own isAdmin field, flashes it, and stops. No prototype lookup happens. The result is false.
+          </aside>
+        </section>
+
+        <section class="lesson-slide proto-lookup-missing-slide" data-background-color="#07101f" data-auto-animate data-auto-animate-duration="0.65">
+          <header class="lesson-heading" data-id="proto-lookup-heading">
+            <h2>Missing properties walk up the chain.</h2>
+          </header>
+
+          <div class="proto-stair-stage proto-missing-stage">
+            <div class="proto-stair-query" data-id="proto-stair-query"><span>Read</span><code>user.isAdmin</code></div>
+
+            <svg class="proto-stair-arrows" data-id="proto-stair-arrows" viewBox="0 0 1400 470" aria-hidden="true">
+              <path class="proto-stair-path proto-query-path" data-id="proto-query-link" d="M 250 330 C 275 330, 300 330, 330 330"></path>
+              <path class="proto-stair-path proto-user-root-path" data-id="proto-user-root-link" d="M 630 275 C 700 275, 650 195, 730 195"></path>
+              <path class="proto-stair-path proto-root-null-path" data-id="proto-root-null-link" d="M 1080 170 C 1160 170, 1120 70, 1200 70"></path>
+            </svg>
+
+            <article class="proto-record proto-stair-user proto-record-missing" data-id="proto-stair-user">
+              <strong>user</strong>
+              <div><span>name</span><code>"Maya"</code></div>
+              <div><span>team</span><code>"support"</code></div>
+            </article>
+            <article class="proto-record proto-stair-root" data-id="proto-stair-root">
+              <strong>Object.prototype</strong>
+              <div><span>toString</span><code>[Function]</code></div>
+              <div><span>hasOwnProperty</span><code>[Function]</code></div>
+            </article>
+            <div class="proto-stair-null" data-id="proto-stair-null"><code>null</code><span>end of chain</span></div>
+
+            <span class="proto-stair-dot proto-miss-user-dot" aria-hidden="true"></span>
+            <span class="proto-stair-dot proto-miss-root-dot" aria-hidden="true"></span>
+            <span class="proto-stair-dot proto-miss-null-dot" aria-hidden="true"></span>
+
+            <div class="proto-stair-status proto-user-miss-status fragment current-visible" data-fragment-index="0">
+              <span>No own <code>isAdmin</code> on <code>user</code>.</span>
+            </div>
+            <div class="proto-stair-status proto-root-miss-status fragment current-visible" data-fragment-index="1">
+              <span>Not on <code>Object.prototype</code> either. Keep walking.</span>
+            </div>
+            <div class="proto-stair-status proto-null-status fragment current-visible" data-fragment-index="2">
+              <span>The chain ended.</span><strong>undefined</strong>
+            </div>
+          </div>
+
+          <aside class="notes">
+            This time user has no isAdmin field. The first click checks user and misses. The next click follows the
+            curved prototype link and checks Object.prototype. The last click reaches null, so JavaScript returns
+            undefined. This lookup behavior is what prototype pollution later abuses.
+          </aside>
+        </section>
+
+        <section class="lesson-slide proto-repoint-slide" data-background-color="#07101f">
+          <header class="lesson-heading term-heading">
+            <h2>The broader primitive: <code>__proto__</code>.</h2>
+            <p class="term-subtitle">Replace the link, or write through it</p>
+          </header>
+
+          <div class="proto-repoint-stage">
+            <div class="proto-repoint-code fragment custom" data-fragment-index="0"><code>user.__proto__ = attackerPrototype</code></div>
+
+            <article class="proto-record proto-repoint-user"><strong>user</strong><div><span>name</span><code>"Maya"</code></div></article>
+            <article class="proto-record proto-repoint-root"><strong>Object.prototype</strong><div><span>toString</span><code>[Function]</code></div></article>
+            <article class="proto-record proto-repoint-attacker"><strong>attackerPrototype</strong><div class="proto-found-field"><span>isAdmin</span><code>true</code></div></article>
+
+            <svg class="proto-repoint-arrows" viewBox="0 0 1400 470" aria-hidden="true">
+              <path class="proto-repoint-old-path" d="M 400 235 C 650 235, 710 130, 950 130"></path>
+              <path class="proto-repoint-new-path" d="M 400 255 C 650 255, 710 370, 950 370"></path>
+            </svg>
+
+            <span class="proto-repoint-dot" aria-hidden="true"></span>
+            <div class="proto-repoint-result fragment custom" data-fragment-index="1"><code>user.isAdmin</code><span>→</span><strong>true</strong></div>
+            <div class="proto-repoint-shared-note fragment custom" data-fragment-index="1">
+              <code>user.__proto__.isAdmin = true</code><span>writes through the link to the shared prototype</span>
+            </div>
+          </div>
+
+          <aside class="notes">
+            Assigning __proto__ invokes the legacy prototype setter and changes this user's internal prototype link.
+            Reading __proto__ also exposes the current prototype, so a field assignment through that reference can
+            modify the shared prototype. That makes __proto__ the broader and more dangerous primitive.
+          </aside>
+        </section>
+
+        <section class="lesson-slide proto-shared-write-slide" data-background-color="#07101f">
+          <header class="lesson-heading term-heading">
+            <h2>The narrower path: <code>constructor.prototype</code>.</h2>
+            <p class="term-subtitle">Write fields on Object.prototype, but do not replace it</p>
+          </header>
+
+          <div class="proto-shared-stage">
+            <div class="proto-shared-code fragment custom" data-fragment-index="0"><code>user.constructor.prototype.isAdmin = true</code></div>
+
+            <article class="proto-record proto-shared-root">
+              <strong>Object.prototype</strong>
+              <div><span>toString</span><code>[Function]</code></div>
+              <div class="proto-shared-admin"><span>isAdmin</span><code>true</code></div>
+            </article>
+            <article class="proto-record proto-shared-user"><strong>user</strong><div><span>name</span><code>"Maya"</code></div></article>
+            <article class="proto-record proto-shared-other"><strong>anotherUser</strong><div><span>name</span><code>"Sam"</code></div></article>
+
+            <svg class="proto-shared-arrows" viewBox="0 0 1400 470" aria-hidden="true">
+              <path class="proto-shared-path-base" d="M 380 360 C 460 360, 445 210, 525 210"></path>
+              <path class="proto-shared-path-base" d="M 1020 360 C 940 360, 955 210, 875 210"></path>
+              <path class="proto-shared-path-active" pathLength="1" d="M 380 360 C 460 360, 445 210, 525 210"></path>
+              <path class="proto-shared-path-active" pathLength="1" d="M 1020 360 C 940 360, 955 210, 875 210"></path>
+            </svg>
+            <span class="proto-shared-dot proto-shared-dot-user" aria-hidden="true"></span>
+            <span class="proto-shared-dot proto-shared-dot-other" aria-hidden="true"></span>
+
+            <div class="proto-shared-result fragment custom" data-fragment-index="1">
+              <code>user.isAdmin</code><strong>true</strong><span>and</span><code>anotherUser.isAdmin</code><strong>true</strong>
+            </div>
+          </div>
+
+          <aside class="notes">
+            For an ordinary object, user.constructor resolves to Object, and constructor.prototype reaches the shared
+            Object.prototype. It can add a field there, changing what ordinary objects inherit. It cannot replace
+            Object.prototype itself through that non-writable property, so this route is narrower than __proto__.
+          </aside>
+        </section>
+
+        <section class="lesson-slide proto-contrived-slide" data-background-color="#07101f">
+          <header class="lesson-heading">
+            <p class="eyebrow">A contrived example</p>
+            <h2>Prototype pollution</h2>
+          </header>
+
+          <div class="proto-demo-stage">
+            <article class="proto-demo-frame fragment current-visible" data-fragment-index="0">
+              <div class="code-panel-bar"><span>deep-merge.ts</span><span>the vulnerable helper</span></div>
+              <pre><code><span class="syntax-keyword">function</span> deepMerge(target, source) {
+  <span class="syntax-keyword">for</span> (<span class="syntax-keyword">const</span> [key, value] <span class="syntax-keyword">of</span> Object.entries(source)) {
+    <span class="syntax-keyword">if</span> (value &amp;&amp; <span class="syntax-keyword">typeof</span> value === <span class="syntax-string">"object"</span>) {
+      target[key] ??= {};
+      deepMerge(target[key], value);
+    } <span class="syntax-keyword">else</span> {
+      target[key] = value;
+    }
+  }
+}
+
+deepMerge({}, req.body);</code></pre>
+            </article>
+
+            <article class="proto-demo-frame proto-transform-frame fragment current-visible" data-fragment-index="1">
+              <div class="code-panel-bar"><span>attacker input</span><span>the write changes direction</span></div>
+              <pre><code>deepMerge({}, {
+  <span class="code-danger">"__proto__"</span>: { "isAdmin": true }
+});
+
+target[<span class="code-danger">"__proto__"</span>]
+  → Object.prototype
+  → Object.prototype.<span class="code-danger">isAdmin = true</span></code></pre>
+            </article>
+
+            <article class="proto-demo-frame proto-gadget-frame fragment current-visible" data-fragment-index="2">
+              <div class="code-panel-bar"><span>the gadget</span><span>a later request</span></div>
+              <div class="proto-gadget-layout">
+                <pre><code><span class="syntax-keyword">const</span> user = { id: <span class="syntax-string">"attacker"</span> };
+
+<span class="syntax-keyword">if</span> (user.isAdmin) {
+  <span class="syntax-keyword">return</span> listAllCustomers();
+}</code></pre>
+                <div class="proto-gadget-stair" aria-label="user.isAdmin resolves through Object.prototype">
+                  <svg viewBox="0 0 700 424" aria-hidden="true">
+                    <path d="M 205 345 C 225 345, 215 310, 235 310"></path>
+                    <path d="M 455 245 C 480 245, 465 190, 490 190"></path>
+                  </svg>
+
+                  <div class="proto-gadget-query"><span>Read</span><code>user.isAdmin</code></div>
+
+                  <article class="proto-record proto-gadget-user-record">
+                    <strong>user</strong>
+                    <div><span>id</span><code>"attacker"</code></div>
+                    <div class="proto-gadget-missing"><span>isAdmin</span><em>not own</em></div>
+                  </article>
+
+                  <article class="proto-record proto-gadget-root-record">
+                    <strong>Object.prototype</strong>
+                    <div><span>toString</span><code>[Function]</code></div>
+                    <div class="proto-gadget-found"><span>isAdmin</span><code>true</code></div>
+                  </article>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="proto-demo-frame proto-fix-frame fragment current-visible" data-fragment-index="3">
+              <div class="code-panel-bar"><span>Fix 1 · validate the business object</span><span>Zod</span></div>
+              <pre><code><span class="syntax-keyword">const</span> Preferences = <span class="code-safe">z.object({
+  theme: z.enum(["light", "dark"]).optional(),
+  compact: z.boolean().optional(),
+})</span>;
+
+<span class="syntax-keyword">const</span> input = Preferences.parse(req.body);
+deepMerge(defaults, input);
+
+<span class="code-safe">// unknown keys never reach deepMerge</span></code></pre>
+            </article>
+
+            <article class="proto-demo-frame proto-fix-frame fragment current-visible" data-fragment-index="4">
+              <div class="code-panel-bar"><span>Fix 2 · use a dictionary type</span><span>Map</span></div>
+              <pre><code><span class="syntax-keyword">const</span> defaults = <span class="code-safe">new Map()</span>;
+
+<span class="syntax-keyword">for</span> (<span class="syntax-keyword">const</span> [key, value] <span class="syntax-keyword">of</span> Object.entries(input)) {
+  defaults.<span class="code-safe">set</span>(key, value);
+}
+
+defaults.get(<span class="syntax-string">"__proto__"</span>); <span class="code-muted">// ordinary map entry</span></code></pre>
+            </article>
+
+            <article class="proto-demo-frame proto-fix-frame fragment current-visible" data-fragment-index="5">
+              <div class="code-panel-bar"><span>Fix 3 · remove the prototype</span><span>null-prototype object</span></div>
+              <pre><code><span class="syntax-keyword">const</span> defaults = <span class="code-safe">Object.create(null)</span>;
+
+deepMerge(defaults, req.body);
+
+defaults.__proto__; <span class="code-muted">// own data, not an inherited setter</span>
+Object.getPrototypeOf(defaults); <span class="code-safe">// null</span></code></pre>
+            </article>
+
+            <article class="proto-demo-frame proto-fix-frame fragment current-visible" data-fragment-index="6">
+              <div class="code-panel-bar"><span>Fix 4 · repair the helper</span><span>reject prototype traversal</span></div>
+              <pre><code><span class="syntax-keyword">const</span> blocked = <span class="syntax-keyword">new</span> Set([
+  <span class="syntax-string">"__proto__"</span>, <span class="syntax-string">"constructor"</span>, <span class="syntax-string">"prototype"</span>,
+]);
+
+<span class="syntax-keyword">for</span> (<span class="syntax-keyword">const</span> [key, value] <span class="syntax-keyword">of</span> Object.entries(source)) {
+  <span class="code-safe">if (blocked.has(key)) throw new Error("unsafe key");</span>
+  <span class="code-muted">// continue with the merge</span>
+}</code></pre>
+            </article>
+          </div>
+
+          <aside class="notes">
+            The deliberately bad helper follows target.__proto__ into Object.prototype. Pollution alone still does
+            nothing useful. The later isAdmin read is the gadget. Then rewind the same code area through four
+            independent fixes. A normal z.object strips unknown keys from its parsed output, so strictObject is not
+            required for this fixed-shape DTO. Map is better when the value is really a dictionary. A null-prototype
+            root stops this empty-dictionary example; a generic nested merge should use null-prototype containers at
+            every level. The helper itself should reject __proto__, constructor, and prototype at every depth.
+          </aside>
+        </section>
+
+        <section class="lesson-slide pollution-demo-slide" data-background-color="#07101f" data-visibility="hidden">
+          <header class="lesson-heading">
+            <p class="eyebrow">Prototype pollution</p>
+            <h2>Let’s make it exploitable.</h2>
+            <p>A deliberately contrived source meets a deliberately useful gadget.</p>
+          </header>
+
+          <div class="pollution-demo-layout">
+            <article class="code-panel pollution-source-panel">
+              <div class="code-panel-bar">
+                <span>deep-merge.ts</span>
+                <span>TypeScript</span>
+              </div>
+              <pre><code><span class="syntax-keyword">function</span> deepMerge(target, source) {
+  <span class="syntax-keyword">for</span> (<span class="syntax-keyword">const</span> [key, value]
+       <span class="syntax-keyword">of</span> Object.entries(source)) {
+    <span class="syntax-keyword">if</span> (value &amp;&amp; <span class="syntax-keyword">typeof</span> value === <span class="syntax-string">"object"</span>) {
+      target[key] ??= {};
+      deepMerge(target[key], value);
+    } <span class="syntax-keyword">else</span> {
+      target[key] = value;
+    }
+  }
+}
+
+<span class="syntax-keyword">const</span> defaults = { theme: <span class="syntax-string">"light"</span> };
+deepMerge(defaults, req.body);</code></pre>
+            </article>
+
+            <div class="pollution-demo-steps">
+              <article class="pollution-demo-step fragment custom" data-fragment-index="0">
+                <span class="pollution-step-label">1 · Attacker input</span>
+                <pre><code>{
+  <span class="pollution-danger">"__proto__"</span>: { "isAdmin": true }
+}</code></pre>
+              </article>
+
+              <article class="pollution-demo-step fragment custom" data-fragment-index="1">
+                <span class="pollution-step-label">2 · Process-wide state</span>
+                <pre><code>({}).isAdmin
+<span class="pollution-danger">// true</span></code></pre>
+              </article>
+
+              <article class="pollution-demo-step pollution-gadget-step fragment custom" data-fragment-index="2">
+                <span class="pollution-step-label">3 · The gadget</span>
+                <pre><code><span class="syntax-keyword">if</span> (req.user.isAdmin) {
+  <span class="syntax-keyword">return</span> listAllCustomers();
+}</code></pre>
+                <strong>Inherited <code>true</code> becomes authorization.</strong>
+              </article>
+            </div>
+          </div>
+
+          <aside class="notes">
+            This example is deliberately cooperative. The request parser alone does not pollute anything: in
+            JSON, __proto__ is an ordinary own property. The target does not have to be empty. Any normal object,
+            including this defaults object, inherits the __proto__ accessor. The recursive merge becomes the
+            pollution source because target["__proto__"] resolves to Object.prototype, and the recursion writes
+            isAdmin there. That is still only a primitive. The authorization check is the gadget that gives the
+            primitive impact. Remove the property after any live console demonstration: delete
+            Object.prototype.isAdmin.
+          </aside>
+        </section>
+
+        <section class="lesson-slide pollution-mistakes-slide" data-background-color="#07101f" data-visibility="hidden">
+          <header class="lesson-heading">
+            <p class="eyebrow">What had to go wrong?</p>
+            <h2>Three assumptions. One exploit.</h2>
+            <p>Prototype pollution only gains teeth when several ordinary choices line up.</p>
+          </header>
+
+          <div class="pollution-mistakes-grid">
+            <article class="pollution-mistake-card fragment custom" data-fragment-index="0">
+              <span class="pollution-mistake-number">01</span>
+              <code>req.body</code>
+              <h3>Unshaped input</h3>
+              <p>Arbitrary nested keys reach generic object plumbing.</p>
+              <small><code>JSON.parse()</code> is not the vulnerability.</small>
+            </article>
+
+            <article class="pollution-mistake-card fragment custom" data-fragment-index="1">
+              <span class="pollution-mistake-number">02</span>
+              <code>target[key]</code>
+              <h3>Prototype-aware write</h3>
+              <p>A deep merge or path setter follows inherited properties.</p>
+              <small>This is the pollution source.</small>
+            </article>
+
+            <article class="pollution-mistake-card fragment custom" data-fragment-index="2">
+              <span class="pollution-mistake-number">03</span>
+              <code>user.isAdmin</code>
+              <h3>Security-sensitive read</h3>
+              <p>Authorization accepts an inherited value as explicit data.</p>
+              <small>This is the gadget.</small>
+            </article>
+          </div>
+
+          <div class="pollution-amplifier fragment custom" data-fragment-index="3">
+            <span>Impact amplifier</span>
+            <strong>A long-lived shared process lets one write affect unrelated requests.</strong>
+            <em>Break any required link and this exploit stops.</em>
+          </div>
+
+          <aside class="notes">
+            Count the first item as an architectural assumption rather than a vulnerability by itself. The two
+            essential bugs are the unsafe write and a useful inherited read. In application code, though, all
+            three gates normally need to line up: attacker-controlled keys must reach the source, the source must
+            mutate a relevant prototype, and a gadget must consume the polluted property. Shared process state
+            increases the blast radius but is not required for an exploit against the polluted target itself.
+          </aside>
+        </section>
+
+        <section class="lesson-slide pollution-defense-slide" data-background-color="#07101f" data-visibility="hidden">
+          <header class="lesson-heading">
+            <p class="eyebrow">When to care</p>
+            <h2>Validate the shape. Distrust the prototype.</h2>
+            <p>Fixed request objects are easy. Arbitrary dictionaries deserve the extra attention.</p>
+          </header>
+
+          <div class="pollution-defense-layout">
+            <article class="code-panel pollution-zod-panel fragment custom" data-fragment-index="0">
+              <div class="code-panel-bar">
+                <span>preferences.ts</span>
+                <span>Zod 4</span>
+              </div>
+              <pre><code><span class="syntax-keyword">const</span> Preferences = z.strictObject({
+  theme: z.enum([<span class="syntax-string">"light"</span>, <span class="syntax-string">"dark"</span>])
+    .optional(),
+  compact: z.boolean().optional(),
+});
+
+<span class="syntax-keyword">const</span> preferences = Preferences.parse(req.body);
+
+deepMerge(defaults, <span class="pollution-safe">preferences</span>);
+<span class="pollution-safe">// "__proto__" never reaches deepMerge</span></code></pre>
+              <div class="pollution-zod-note">Use the parsed value, not <code>req.body</code>.</div>
+            </article>
+
+            <div class="pollution-defense-cards">
+              <article class="pollution-defense-card fragment custom" data-fragment-index="1">
+                <span>When to care</span>
+                <div class="pollution-risk-equation">
+                  <code>arbitrary keys</code><b>+</b><code>deep object manipulation</code>
+                </div>
+                <p>No attacker-controlled keys or paths means no data-only pollution source.</p>
+              </article>
+
+              <article class="pollution-defense-card fragment custom" data-fragment-index="2">
+                <span>For real dictionaries</span>
+                <ul>
+                  <li>Reject <code>__proto__</code>, <code>constructor</code>, and <code>prototype</code></li>
+                  <li>Prefer <code>Map</code> or null-prototype objects</li>
+                  <li>Use a pollution-safe merge or path library</li>
+                </ul>
+              </article>
+
+              <article class="pollution-defense-card fragment custom" data-fragment-index="3">
+                <span>You can break the gadget too</span>
+                <pre><code>Object.hasOwn(user, <span class="syntax-string">"isAdmin"</span>)
+  &amp;&amp; user.isAdmin === true</code></pre>
+                <div class="pollution-runtime-note">
+                  <code>--disable-proto=throw</code>
+                  <span>Blocks <code>__proto__</code>, not <code>constructor.prototype</code>.</span>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <aside class="notes">
+            A fixed-shape DTO is the easy case. z.strictObject rejects unknown keys and returns parsed output.
+            Recent Zod 4 versions safely keep __proto__ out of that output; version 4.4.3 briefly failed to report
+            that particular key as an error even though it was dropped, and the reporting fix was subsequently
+            merged. This defense only works if later code uses the parsed output. Prototype pollution deserves
+            attention when attacker-controlled keys or paths meet dynamic, usually deep, object writes. Without
+            attacker-controlled keys or paths, this data-only attack has no entry point. Schemas designed to
+            preserve arbitrary keys, such as loose objects, records, or catchalls, need explicit key handling and
+            an up-to-date Zod version. For genuine dictionaries, prefer Map or a null-prototype object. On
+            sensitive reads, Object.hasOwn prevents inherited values from becoming authority. Node's
+            --disable-proto flag removes or traps the legacy __proto__ accessor. A normal object's constructor
+            still resolves to Object, so constructor.prototype reaches the same shared prototype. Treat the flag
+            as hardening rather than the primary fix.
+          </aside>
+        </section>
+
+        <section class="lesson-slide pollution-merge-fix-slide" data-background-color="#07101f" data-visibility="hidden">
+          <header class="lesson-heading">
+            <p class="eyebrow">Defense in depth</p>
+            <h2>Fix the source too.</h2>
+            <p>The merge helper should remain safe when a caller forgets validation.</p>
+          </header>
+
+          <div class="pollution-merge-fix-layout">
+            <article class="code-panel pollution-safe-merge-panel">
+              <div class="code-panel-bar">
+                <span>deep-merge.ts</span>
+                <span>TypeScript</span>
+              </div>
+              <pre><code><span class="syntax-keyword">const</span> blocked = <span class="syntax-keyword">new</span> Set([
+  <span class="syntax-string">"__proto__"</span>, <span class="syntax-string">"constructor"</span>, <span class="syntax-string">"prototype"</span>,
+]);
+
+<span class="syntax-keyword">function</span> deepMerge(target, source) {
+  <span class="syntax-keyword">for</span> (<span class="syntax-keyword">const</span> [key, value] <span class="syntax-keyword">of</span> Object.entries(source)) {
+    <span class="pollution-safe">if (blocked.has(key)) throw new Error("unsafe key");</span>
+
+    <span class="syntax-keyword">if</span> (!isPlainObject(value)) {
+      target[key] = value;
+      <span class="syntax-keyword">continue</span>;
+    }
+
+    <span class="syntax-keyword">const</span> current = <span class="pollution-safe">Object.hasOwn(target, key)</span> &amp;&amp;
+      isPlainObject(target[key]) ? target[key] : {};
+
+    target[key] = deepMerge(current, value);
+  }
+  <span class="syntax-keyword">return</span> target;
+}</code></pre>
+            </article>
+
+            <div class="pollution-merge-rules">
+              <article class="pollution-merge-rule fragment custom" data-fragment-index="0">
+                <span>01 · Stop traversal</span>
+                <h3>Block prototype-control keys</h3>
+                <p>Reject them at every depth. Throwing also makes the attempted input visible.</p>
+              </article>
+
+              <article class="pollution-merge-rule fragment custom" data-fragment-index="1">
+                <span>02 · Ignore inheritance</span>
+                <h3>Recurse into own values only</h3>
+                <p>Never use an inherited object as the next merge target.</p>
+              </article>
+
+              <article class="pollution-merge-rule fragment custom" data-fragment-index="2">
+                <span>03 · Keep the contract narrow</span>
+                <h3>Merge plain objects only</h3>
+                <p>Replace arrays and special objects instead of recursively interpreting them.</p>
+              </article>
+            </div>
+          </div>
+
+          <div class="pollution-merge-takeaway fragment custom" data-fragment-index="3">
+            Validate at the endpoint. Defend inside the helper. Keep both.
+          </div>
+
+          <aside class="notes">
+            The critical repair is inside the reusable helper. Reject __proto__, constructor, and prototype at
+            every recursion level. Object.hasOwn then prevents some other inherited property from becoming the
+            recursive target. Restrict recursion to plain objects so arrays, dates, class instances, and other
+            special values do not gain accidental merge behavior. Throwing is preferable to silently skipping a
+            reserved key because callers can log or reject the request. This slide is the algorithm's security
+            contract, not a recommendation to maintain a home-grown merge library. In production, use a current,
+            tested library and keep the endpoint schema as the independent first defense.
+          </aside>
+        </section>
+
+        <section class="lesson-slide summary-slide" data-background-color="#07101f">
+          <header class="lesson-heading">
+            <p class="eyebrow">Summary</p>
+            <h2>What to remember.</h2>
+          </header>
+
+          <article class="summary-anchor fragment custom" data-fragment-index="0">
+            <strong>Don’t make security assumptions.</strong>
+            <span>Model the threat, then break its chain anywhere.</span>
+          </article>
+
+          <div class="summary-grid">
+            <article class="summary-card summary-allowlist fragment custom" data-fragment-index="1">
+              <span>01</span>
+              <h3>Whitelisting is king.</h3>
+            </article>
+
+            <article class="summary-card summary-xss fragment custom" data-fragment-index="2">
+              <span>02</span>
+              <h3>Sanitize HTML on the <strong>client</strong>.</h3>
+            </article>
+
+            <article class="summary-card summary-csrf fragment custom" data-fragment-index="3">
+              <span>03</span>
+              <h3>CSRF tokens are sometimes still needed.</h3>
+            </article>
+
+            <article class="summary-card summary-dependencies fragment custom" data-fragment-index="4">
+              <span>04</span>
+              <h3>Lock and audit the dependencies.</h3>
+            </article>
+
+            <article class="summary-card summary-pollution fragment custom" data-fragment-index="5">
+              <span>05</span>
+              <h3>Prototype pollution <em>(sometimes)</em> exists.</h3>
+            </article>
+
+            <article class="summary-card summary-ddos fragment custom" data-fragment-index="6">
+              <span>06</span>
+              <h3>9 out of 10 companies call a product launch a DDoS.</h3>
+            </article>
+          </div>
+
+          <aside class="notes">
+            The summary follows the talk's main thread. Model the authority and trust assumptions before choosing
+            controls. Prefer finite allowed values over attempts to enumerate hostile input. Sanitize where
+            untrusted content becomes HTML in this application, which is the client-side Markdown renderer.
+            Cookie-authenticated mutations always need a CSRF defense, though that defense is not always a token.
+            Lockfiles make installations reproducible; a separate recurring audit process finds vulnerabilities
+            disclosed after deployment. Availability incidents are often amplified by our own traffic and retry
+            behavior. Prototype pollution is real when arbitrary keys reach deep object manipulation and a later
+            inherited-property read gives the polluted value impact.
+          </aside>
+        </section>
+
+        <section class="closing-slide" data-background-color="#07101f">
+          <div class="closing-content">
+            <h2>Thank you for listening.</h2>
+            <p class="closing-question fragment custom" data-fragment-index="0">Questions?</p>
+          </div>
+
+          <aside class="notes">
+            Thank the audience, then reveal the question prompt when opening the floor.
+          </aside>
+        </section>
+      </div>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

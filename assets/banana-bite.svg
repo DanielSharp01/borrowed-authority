@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Peeled banana with a missing top">
+  <g transform="rotate(-7 32 32)">
+    <!-- Exposed fruit: curved like a banana, with the top cleanly chopped off. -->
+    <path
+      d="M29 4.5 37 7c-3.7 8.1-5.2 15.6-3.8 22.3 1.2 5.9 4.7 10.1 10.3 12.9-4.4 4.2-10 5.6-15.3 3.5-7.7-3-12.5-12.7-11.7-23.5C17.1 13.4 21.4 6.8 29 4.5Z"
+      fill="#342f2a"
+    />
+
+    <!-- The peel folds away in three long, curved ribbons. -->
+    <path
+      d="M28.4 40.2C19.8 38.6 11.6 41.9 5 50.3c7.5 1.4 15.7-.4 24.9-6.1Z"
+      fill="#6a5f53"
+    />
+    <path
+      d="M31.1 42.7c-1.4 7.1-4.8 12.4-10.1 16 7.2.5 13.4-3.8 16.3-13.3Z"
+      fill="#6a5f53"
+    />
+    <path
+      d="M35.1 40.8c9.1-2 16.6.1 23.2 6.3-7.4 5.7-16.8 6.1-27.9-.9 5.9 1.2 11.5.7 16.7-1.5-4.1-.8-8.1-2.1-12-3.9Z"
+      fill="#6a5f53"
+    />
+
+    <!-- A small fold line keeps the peel readable at icon size. -->
+    <path
+      d="M27.4 39.4c3.5 3.3 8.2 3.9 12.2 1.3"
+      fill="none"
+      stroke="#8d8276"
+      stroke-linecap="round"
+      stroke-width="2.2"
+    />
+  </g>
+</svg>
